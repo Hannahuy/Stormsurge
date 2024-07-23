@@ -5,7 +5,8 @@
                 <span>减灾措施情景库</span>
             </div>
             <div class="oneBox">
-                <el-checkbox-group v-model="checkListone" class="checkboxone">
+                <el-checkbox-group v-model="checkListone" class="checkboxone"
+                @change="handleCheckChange('checkListone')">
                     <el-checkbox label="无减灾设施" value="无减灾设施" />
                     <el-checkbox label="加防潮堤" value="加防潮堤" />
                     <el-checkbox label="加防汛沙袋" value="加防汛沙袋" />
