@@ -18,4 +18,10 @@ div {
   -webkit-user-select: none;
   -ms-user-select: none;
 }
+.el-picker__popper.el-popper {
+  inset: 490px auto auto 15px !important;
+}
+.el-popper__arrow::before {
+  display: none;
+}
 </style>
