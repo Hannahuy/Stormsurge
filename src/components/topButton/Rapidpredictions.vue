@@ -53,17 +53,9 @@
             <div :style="style">
                 <span class="bottombox-slider-span">{{ formattedTime }}</span>
             </div>
-            <el-slider :step="30" v-model="timePlay" :show-tooltip="false" :min="min" :max="max"
+            <el-slider :step="30" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
                 style="position: relative; z-index: 1; width: 1600px" @change="gettimePlay">
             </el-slider>
-        </div>
-        <div class="bottombox-timespan">
-            <span>{{ formattedMinTime }}</span>
-            <span>{{ formattedMinTimeAdd1Day }}</span>
-            <span>{{ formattedMinTimeAdd2Days }}</span>
-            <span>{{ formattedMinTimeAdd3Days }}</span>
-            <span>{{ formattedMinTimeAdd4Days }}</span>
-            <span>{{ formattedMaxTime }}</span>
         </div>
     </div>
     <div v-show="showbar" class="sidebar">
@@ -94,7 +86,7 @@ import * as echarts from "echarts";
 import dayjs from "dayjs";
 import { callUIInteraction, addResponseEventListener, } from "../../module/webrtcVideo/webrtcVideo.js";
 import tabledataJson from "/public/data/实时监测.json";
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus';
 
 const tableData = ref([]);
 // 获取表格数据
@@ -210,6 +202,21 @@ const style = computed(() => {
     return {
         paddingLeft: `${left}%`,
     };
+});
+// 定义 slider 的刻度
+const marks = computed(() => {
+    const marks = {};
+    const start = dayjs(min.value);
+    for (let i = 0; i <= 5; i++) {
+        const markTime = start.add(i, 'day').startOf('day');
+        marks[markTime.valueOf()] = {
+            style: {
+                color: '#ffffff'
+            },
+            label: markTime.format('YYYY-MM-DD')
+        };
+    }
+    return marks;
 });
 watch(timePick, (newVal) => {
     const selectedDate = dayjs(newVal);
@@ -468,9 +475,9 @@ onBeforeUnmount(() => {
     border: 0;
 }
 
-.bottombox-slider :deep(.el-slider__bar) {
+/* .bottombox-slider :deep(.el-slider__bar) {
     background-color: #42aeff;
-}
+} */
 
 .sidebar {
     position: absolute;
@@ -591,5 +598,18 @@ onBeforeUnmount(() => {
 
 :deep(.el-table .cell) {
     color: #b7cffc;
+}
+
+/* .bottombox-slider :deep(.el-slider__runway) {
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+} */
+
+.bottombox-slider :deep(.el-slider__bar) {
+    background: linear-gradient(to right, #0088ff, #00f2fe);
+    /* 渐变蓝色 */
+}
+
+.bottombox-slider :deep(.el-slider__marks-text) {
+    color: white !important;
 }
 </style>
