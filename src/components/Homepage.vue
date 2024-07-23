@@ -40,35 +40,500 @@
     <div v-if="activeButton === '假设分析'">
       <Whatifanalysis />
     </div>
+    <div v-show="!activeButton">
+      <div class="hleftbox">
+        <div class="hleftbox-1">
+          <div class="hleftbox-1-title">
+            <span>最近24小时数据</span>
+          </div>
+          <div class="hleftbox-1-content">
+            <div class="hleftbox-1-content-1">
+              <img src="../assets/img/风场@3x.png" class="imgsize" alt="">
+              <div class="hleftbox-1-content-1-span">
+                <span>最大潮位：3.0m</span>
+                <span>07-23 11:00</span>
+              </div>
+            </div>
+            <div class="hleftbox-1-content-1">
+              <img src="../assets/img/海温@3x.png" class="imgsize" alt="">
+              <div class="hleftbox-1-content-1-span">
+                <span>最小潮位：0.5m</span>
+                <span>07-23 05:00</span>
+              </div>
+            </div>
+            <div class="hleftbox-1-content-1">
+              <img src="../assets/img/海浪@3x.png" class="imgsize" alt="">
+              <div class="hleftbox-1-content-1-span">
+                <span>最大波高：2.0m</span>
+                <span>07-23 11:00</span>
+              </div>
+            </div>
+            <div class="hleftbox-1-content-1">
+              <img src="../assets/img/流场@3x.png" class="imgsize" alt="">
+              <div class="hleftbox-1-content-1-span">
+                <span>最小波高：0.2m</span>
+                <span>07-23 05:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hleftbox-2">
+          <div class="hleftbox-1-title">
+            <span>最近一个月潮位变化</span>
+          </div>
+          <div id="hleftbox-1-content-echarts"></div>
+        </div>
+        <div class="hleftbox-3">
+          <div class="hleftbox-1-title">
+            <span>最近一个月波高变化</span>
+          </div>
+          <div id="hleftbox-2-content-echarts"></div>
+        </div>
+      </div>
+      <div class="rightbox">
+        <div class="hleftbox-1">
+          <div class="hleftbox-1-title">
+            <span>小麦岛实时监测数据</span>
+          </div>
+          <div id="hleftbox-3-content-echarts"></div>
+        </div>
+        <div class="hleftbox-1">
+          <div class="hleftbox-1-title">
+            <span>未来24小时潮位预测</span>
+          </div>
+          <div id="hleftbox-4-content-echarts"></div>
+        </div>
+        <div class="hleftbox-1">
+          <div class="hleftbox-1-title">
+            <span>未来24小时波高预测</span>
+          </div>
+          <div id="hleftbox-5-content-echarts"></div>
+        </div>
+      </div>
+    </div>
   </div>
   <background />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Virtualsimulation from './topButton/Virtualsimulation.vue'
 import Realtimeawareness from './topButton/Realtimeawareness.vue'
 import Rapidpredictions from './topButton/Rapidpredictions.vue'
 import Whatifanalysis from './topButton/Whatifanalysis.vue'
 import background from './topButton/background.vue'
 import { callUIInteraction } from "../module/webrtcVideo/webrtcVideo.js";
+import * as echarts from "echarts";
 
 const activeButton = ref('')
 const lastActiveButton = ref('')
+
 const setActiveButton = (button) => {
-  lastActiveButton.value = activeButton.value
-  activeButton.value = button
-  callUIInteraction({
-    FunctionName: `${button}`,
-    State:true,
-  });
-  callUIInteraction({
-    FunctionName: `${lastActiveButton.value}`,
-    State:false,
-  });
+  if (activeButton.value === button) {
+    // 如果当前按钮已经被选中，则取消选中
+    lastActiveButton.value = activeButton.value
+    activeButton.value = ''
+    Tideinit();
+    Tideinits();
+    Tideinitss();
+    Tideinitsss();
+    Tideinitssss();
+    callUIInteraction({
+      FunctionName: `${lastActiveButton.value}`,
+      State: false,
+    });
+  } else {
+    // 否则设置为当前按钮
+    lastActiveButton.value = activeButton.value
+    activeButton.value = button
+    callUIInteraction({
+      FunctionName: `${button}`,
+      State: true,
+    });
+    callUIInteraction({
+      FunctionName: `${lastActiveButton.value}`,
+      State: false,
+    });
+  }
 }
+
+let TideEchartsdata = null;
+const Tideinit = () => {
+  const salinityChartElement = document.getElementById("hleftbox-1-content-echarts");
+  if (TideEchartsdata) {
+    TideEchartsdata.dispose();
+  }
+  TideEchartsdata = echarts.init(salinityChartElement);
+  const options = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        axisTick: {
+          alignWithLabel: true
+        },
+        axisLabel: {
+          show: true,
+          textStyle: {
+            color: "#b7cffc",
+            fontSize: 14,
+          },
+        },
+      }
+    ],
+    yAxis: {
+      name: '水位 (m)', // 添加单位
+      nameTextStyle: {
+        color: "#b7cffc",
+        fontSize: 14
+      },
+      axisLine: {
+        show: false
+      },
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14
+        }
+      },
+      splitLine: {
+        show: false
+      }
+    },
+    series: [
+      {
+        name: '水位',
+        type: 'bar',
+        barWidth: '60%',
+        itemStyle: {
+          // 使用渐变色
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
+              { offset: 1, color: '#0088ff' }  // 渐变结束颜色
+            ],
+            global: false // 缺省为 false
+          }
+        },
+        data: [10, 52, 200, 334, 390, 330, 220]
+      }
+    ],
+    grid: { x: 35, y: 30, x2: 15, y2: 25 },
+  };
+  TideEchartsdata.setOption(options);
+};
+
+let TideEchartsdatas = null;
+const Tideinits = () => {
+  const salinityChartElement = document.getElementById("hleftbox-2-content-echarts");
+  if (TideEchartsdatas) {
+    TideEchartsdatas.dispose();
+  }
+  TideEchartsdatas = echarts.init(salinityChartElement);
+  const options = {
+    tooltip: {
+      trigger: 'axis',
+    },
+    xAxis: {
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14,
+        },
+      },
+    },
+    yAxis: {
+      name: '波高 (m)', // 添加单位
+      nameTextStyle: {
+        color: "#b7cffc",
+        fontSize: 14
+      },
+      axisLine: {
+        show: false
+      },
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14
+        }
+      },
+      splitLine: {
+        show: false
+      }
+    },
+    series: [
+      {
+        type: 'line',
+        showSymbol: false,
+        name: '波高',
+        data: [150, 230, 224, 218, 135, 147, 260],
+        lineStyle: {
+          width: 5, // 设置线条粗细为5
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
+              { offset: 1, color: '#0088ff' }  // 渐变结束颜色
+            ],
+            global: false // 缺省为 false
+          }
+        }
+      }
+    ],
+    grid: { x: 35, y: 30, x2: 15, y2: 25 },
+  };
+  TideEchartsdatas.setOption(options);
+};
+let TideEchartsdatass = null;
+const Tideinitss = () => {
+  const salinityChartElement = document.getElementById("hleftbox-3-content-echarts");
+  if (TideEchartsdatass) {
+    TideEchartsdatass.dispose();
+  }
+  TideEchartsdatass = echarts.init(salinityChartElement);
+  const options = {
+    tooltip: {
+      trigger: 'axis',
+    },
+    xAxis: {
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14,
+        },
+      },
+    },
+    yAxis: {
+      name: '波高 (m)', // 添加单位
+      nameTextStyle: {
+        color: "#b7cffc",
+        fontSize: 14
+      },
+      axisLine: {
+        show: false
+      },
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14
+        }
+      },
+      splitLine: {
+        show: false
+      }
+    },
+    series: [
+      {
+        type: 'line',
+        showSymbol: false,
+        name: '波高',
+        data: [150, 230, 224, 218, 135, 147, 260],
+        lineStyle: {
+          width: 5, // 设置线条粗细为5
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
+              { offset: 1, color: '#0088ff' }  // 渐变结束颜色
+            ],
+            global: false // 缺省为 false
+          }
+        }
+      }
+    ],
+    grid: { x: 35, y: 30, x2: 15, y2: 25 },
+  };
+  TideEchartsdatass.setOption(options);
+};
+let TideEchartsdatasss = null;
+const Tideinitsss = () => {
+  const salinityChartElement = document.getElementById("hleftbox-4-content-echarts");
+  if (TideEchartsdatasss) {
+    TideEchartsdatasss.dispose();
+  }
+  TideEchartsdatasss = echarts.init(salinityChartElement);
+  const options = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        axisTick: {
+          alignWithLabel: true
+        },
+        axisLabel: {
+          show: true,
+          textStyle: {
+            color: "#b7cffc",
+            fontSize: 14,
+          },
+        },
+      }
+    ],
+    yAxis: {
+      name: '水位 (m)', // 添加单位
+      nameTextStyle: {
+        color: "#b7cffc",
+        fontSize: 14
+      },
+      axisLine: {
+        show: false
+      },
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14
+        }
+      },
+      splitLine: {
+        show: false
+      }
+    },
+    series: [
+      {
+        name: '水位',
+        type: 'bar',
+        barWidth: '60%',
+        itemStyle: {
+          // 使用渐变色
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
+              { offset: 1, color: '#0088ff' }  // 渐变结束颜色
+            ],
+            global: false // 缺省为 false
+          }
+        },
+        data: [10, 52, 200, 334, 390, 330, 220]
+      }
+    ],
+    grid: { x: 35, y: 30, x2: 15, y2: 25 },
+  };
+  TideEchartsdatasss.setOption(options);
+};
+let TideEchartsdatassss = null;
+const Tideinitssss = () => {
+  const salinityChartElement = document.getElementById("hleftbox-5-content-echarts");
+  if (TideEchartsdatassss) {
+    TideEchartsdatassss.dispose();
+  }
+  TideEchartsdatassss = echarts.init(salinityChartElement);
+  const options = {
+    tooltip: {
+      trigger: 'axis',
+    },
+    xAxis: {
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14,
+        },
+      },
+    },
+    yAxis: {
+      name: '波高 (m)', // 添加单位
+      nameTextStyle: {
+        color: "#b7cffc",
+        fontSize: 14
+      },
+      axisLine: {
+        show: false
+      },
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14
+        }
+      },
+      splitLine: {
+        show: false
+      }
+    },
+    series: [
+      {
+        type: 'line',
+        showSymbol: false,
+        name: '波高',
+        data: [150, 230, 224, 218, 135, 147, 260],
+        lineStyle: {
+          width: 5, // 设置线条粗细为5
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
+              { offset: 1, color: '#0088ff' }  // 渐变结束颜色
+            ],
+            global: false // 缺省为 false
+          }
+        }
+      }
+    ],
+    grid: { x: 35, y: 30, x2: 15, y2: 25 },
+  };
+  TideEchartsdatassss.setOption(options);
+};
 onMounted(() => {
-  setActiveButton('虚拟仿真')
+  Tideinit();
+  Tideinits();
+  Tideinitss();
+  Tideinitsss();
+  Tideinitssss();
   if (window.performance.navigation.type == 1) {
     console.log("页面被刷新")
     sessionStorage.clear();
@@ -76,6 +541,23 @@ onMounted(() => {
     console.log("首次被加载")
   }
 })
+onBeforeUnmount(() => {
+  if (TideEchartsdata) {
+    TideEchartsdata.dispose();
+  }
+  if (TideEchartsdatas) {
+    TideEchartsdatas.dispose();
+  }
+  if (TideEchartsdatass) {
+    TideEchartsdatass.dispose();
+  }
+  if (TideEchartsdatasss) {
+    TideEchartsdatasss.dispose();
+  }
+  if (TideEchartsdatassss) {
+    TideEchartsdatassss.dispose();
+  }
+});
 </script>
 
 <style scoped>
@@ -164,5 +646,118 @@ onMounted(() => {
   background-image: url('../assets/img/标题选中样式.png');
   background-repeat: no-repeat;
   background-position: -20% 50%;
+}
+
+.hleftbox {
+  position: absolute;
+  top: 12%;
+  left: 10px;
+  width: 420px;
+  min-height: 800px;
+  padding: 20px;
+  box-sizing: border-box;
+  background-image: url('../assets/img/kuang-1@3x.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.hleftbox-1 {
+  min-height: 250px;
+}
+
+.hleftbox-1-title {
+  height: 30px;
+  background-image: url('../assets/img/标题背景.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  color: #b7cffc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 30px;
+  font-size: 18px;
+}
+
+.hleftbox-1-title span {
+  font-family: PangMenZhengDao;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 5px;
+  background: linear-gradient(0deg, #12D8FF 0%, #96EFFD 50%, #F9FCFF 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hleftbox-1-content {
+  margin-top: 10px;
+  height: 210px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  color: #b7cffc;
+}
+.hleftbox-1-content span {
+  margin-left: 5px;
+  margin-right: 5px;
+  font-family: PangMenZhengDao;
+  font-size: 16px;
+  font-weight: 600;
+  /* letter-spacing: 5px; */
+  background: linear-gradient(0deg, #12D8FF 0%, #96EFFD 50%, #F9FCFF 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hleftbox-1-content-1 {
+  width: 190px;
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hleftbox-1-content-1-span {
+  display: flex;
+  flex-direction: column;
+}
+
+.imgsize {
+  width: 55px;
+  height: 55px;
+}
+
+#hleftbox-1-content-echarts,
+#hleftbox-2-content-echarts,
+#hleftbox-3-content-echarts,
+#hleftbox-4-content-echarts,
+#hleftbox-5-content-echarts {
+  width: 380px;
+  margin-top: 10px;
+  height: 210px;
+}
+
+.hleftbox-2 {
+  min-height: 250px;
+  margin-top: 10px;
+}
+
+.hleftbox-3 {
+  margin-top: 10px;
+  min-height: 250px;
+}
+
+.rightbox {
+  position: absolute;
+  top: 12%;
+  right: 10px;
+  width: 420px;
+  min-height: 800px;
+  padding: 20px;
+  box-sizing: border-box;
+  background-image: url('../assets/img/kuang-1@3x.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 </style>
