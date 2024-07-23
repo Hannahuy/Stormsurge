@@ -58,6 +58,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 import dayjs from "dayjs";
 import { callUIInteraction, addResponseEventListener, } from "../../module/webrtcVideo/webrtcVideo.js";
+import tabledataJson from "/public/data/实时监测.json";
 import { ElMessage } from 'element-plus'
 
 const isShowSelected = ref(true); // 默认选中“显示”
@@ -208,31 +209,38 @@ const Tideinit = () => {
         TideEchartsdata.dispose();
     }
     TideEchartsdata = echarts.init(salinityChartElement);
+    // 从 JSON 数据中提取 x 和 y 轴的数据
+    const updatedTimes = tabledataJson.map(item => item.Updated);
+    const waterLevels = tabledataJson.map(item => parseFloat(item.waterlevel));
     const options = {
         visualMap: [
             {
                 show: false,
                 type: 'continuous',
                 seriesIndex: 0,
-                min: 0,
-                max: 400
+                min: Math.min(...waterLevels),
+                max: Math.max(...waterLevels)
             }
         ],
         tooltip: {
             trigger: 'axis'
         },
         xAxis: {
-            data: Array.from({ length: 24 }, (_, i) => `${i}:00`),
+            data: updatedTimes,
             axisLabel: {
                 show: true,
                 textStyle: {
                     color: "#b7cffc",
                     fontSize: 14,
                 },
+                formatter: function(value) {
+                // 提取时间部分
+                return value.split(' ')[1]; // 只显示时间部分
+            },
             },
         },
         yAxis: {
-            name: 'mg/L', // 添加单位
+            name: '水位 (m)', // 添加单位
             nameTextStyle: {
                 color: "#b7cffc",
                 fontSize: 14
@@ -245,9 +253,6 @@ const Tideinit = () => {
                 textStyle: {
                     color: "#b7cffc",
                     fontSize: 14
-                },
-                formatter: function (value) {
-                    return (1.805 * value + 0.03).toFixed(1);
                 }
             },
             splitLine: {
@@ -258,14 +263,14 @@ const Tideinit = () => {
             {
                 type: 'line',
                 showSymbol: false,
-                name: '盐度值',
-                data: [1, 8, 5, 3, 6, 7, 1, 4, 5, 2, 3, 6, 9, 8, 5, 7, 8, 6, 5, 2, 3, 2, 5, 6],
-                lineStyle: { // 添加lineStyle属性
-                    width: 5 // 设置线条粗细为2
+                name: '水位',
+                data: waterLevels,
+                lineStyle: {
+                    width: 5 // 设置线条粗细为5
                 }
             }
         ],
-        grid: { x: 30, y: 30, x2: 5, y2: 25 },
+        grid: { x: 35, y: 30, x2: 15, y2: 25 },
     };
     TideEchartsdata.setOption(options);
 };
@@ -276,31 +281,39 @@ const Waveheightinit = () => {
         WaveheightEchartsdata.dispose();
     }
     WaveheightEchartsdata = echarts.init(salinityChartElement);
+    // 从 JSON 数据中提取 x 和 y 轴的数据
+    const updatedTimes = tabledataJson.map(item => item.Updated);
+    const WaveHeight = tabledataJson.map(item => parseFloat(item.Waveheight));
+
     const options = {
         visualMap: [
             {
                 show: false,
                 type: 'continuous',
                 seriesIndex: 0,
-                min: 0,
-                max: 400
+                min: Math.min(...WaveHeight),
+                max: Math.max(...WaveHeight)
             }
         ],
         tooltip: {
             trigger: 'axis'
         },
         xAxis: {
-            data: Array.from({ length: 24 }, (_, i) => `${i}:00`),
+            data: updatedTimes,
             axisLabel: {
                 show: true,
                 textStyle: {
                     color: "#b7cffc",
                     fontSize: 14,
                 },
+                formatter: function(value) {
+                // 提取时间部分
+                return value.split(' ')[1]; // 只显示时间部分
+            },
             },
         },
         yAxis: {
-            name: 'mg/L', // 添加单位
+            name: '波高 (m)', // 添加单位
             nameTextStyle: {
                 color: "#b7cffc",
                 fontSize: 14
@@ -326,14 +339,14 @@ const Waveheightinit = () => {
             {
                 type: 'line',
                 showSymbol: false,
-                name: '盐度值',
-                data: [1, 8, 5, 3, 6, 7, 1, 4, 5, 2, 3, 6, 9, 8, 5, 7, 8, 6, 5, 2, 3, 2, 5, 6],
+                name: '波高',
+                data: WaveHeight,
                 lineStyle: { // 添加lineStyle属性
                     width: 5 // 设置线条粗细为2
                 }
             }
         ],
-        grid: { x: 30, y: 30, x2: 5, y2: 25 },
+        grid: { x: 35, y: 30, x2: 15, y2: 25 },
     };
     WaveheightEchartsdata.setOption(options);
 };
