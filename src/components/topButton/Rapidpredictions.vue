@@ -50,7 +50,7 @@
     </div>
     <div class="bottombox">
         <div class="bottombox-slider">
-            <div :style="style">
+            <div :style="adjustedStyle">
                 <span class="bottombox-slider-span">{{ formattedTime }}</span>
             </div>
             <el-slider :step="30" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
@@ -176,10 +176,24 @@ const formattedTime = computed(() => {
 const style = computed(() => {
     const length = max.value - min.value,
         progress = timePlay.value - min.value,
-        left = (progress / length) * 100;
+        left = (progress / length) * 92;
     return {
         paddingLeft: `${left}%`,
     };
+});
+
+const adjustedStyle = computed(() => {
+    const baseStyle = style.value;
+    const divWidth = 125; // 计算宽度为125px
+    const totalWidth = 1600;
+    const leftPadding = parseFloat(baseStyle.paddingLeft);
+
+    if ((leftPadding / 100) * totalWidth + divWidth > totalWidth) {
+        return {
+            paddingLeft: `${((totalWidth - divWidth) / totalWidth) * 100}%`,
+        };
+    }
+    return baseStyle;
 });
 // 定义 slider 的刻度
 const marks = computed(() => {

@@ -35,7 +35,7 @@
     </div>
     <div class="bottombox">
         <div class="bottombox-slider">
-            <div :style="style">
+            <div :style="adjustedStyle">
                 <span class="bottombox-slider-span">{{ formattedTime }}</span>
             </div>
             <el-slider :step="30" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
@@ -57,15 +57,15 @@ const isShowSelected = ref(true); // 默认选中“显示”
 const toggleShow = () => {
     isShowSelected.value = true; // 选中“显示”
     callUIInteraction({
-        FunctionName:'浮标模型',
-        State:true
+        FunctionName: '浮标模型',
+        State: true
     })
 };
 const toggleHide = () => {
     isShowSelected.value = false; // 选中“隐藏”
     callUIInteraction({
-        FunctionName:'浮标模型',
-        State:false
+        FunctionName: '浮标模型',
+        State: false
     })
 };
 
@@ -95,7 +95,7 @@ const Backoff = () => {
     timePlay.value = dayjs(previousTime).subtract(1, 'hour').valueOf();
     callUIInteraction({
         FunctionName: `实时感知时间轴`,
-        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 // 暂停/播放
@@ -123,7 +123,7 @@ const Fastforward = () => {
     timePlay.value = dayjs(previousTime).add(1, 'hour').valueOf();
     callUIInteraction({
         FunctionName: `实时感知时间轴`,
-        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 
@@ -142,10 +142,24 @@ const formattedTime = computed(() => {
 const style = computed(() => {
     const length = max.value - min.value,
         progress = timePlay.value - min.value,
-        left = (progress / length) * 100;
+        left = (progress / length) * 92;
     return {
         paddingLeft: `${left}%`,
     };
+});
+
+const adjustedStyle = computed(() => {
+    const baseStyle = style.value;
+    const divWidth = 125; // 计算宽度为125px
+    const totalWidth = 1600;
+    const leftPadding = parseFloat(baseStyle.paddingLeft);
+
+    if ((leftPadding / 100) * totalWidth + divWidth > totalWidth) {
+        return {
+            paddingLeft: `${((totalWidth - divWidth) / totalWidth) * 100}%`,
+        };
+    }
+    return baseStyle;
 });
 // 定义 slider 的刻度
 const marks = computed(() => {
@@ -177,7 +191,7 @@ watch(timePlay, (newVal) => {
     if (currentTime.minute() === 0 && currentTime.second() === 0) {
         callUIInteraction({
             FunctionName: `实时感知时间轴`,
-            Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+            Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
         });
     }
     if (currentTime.isSame(dayjs(max.value))) {
@@ -193,7 +207,7 @@ const gettimePlay = (e) => {
     }
     callUIInteraction({
         FunctionName: `实时感知时间轴`,
-        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 
@@ -204,21 +218,14 @@ const Tideinit = () => {
         TideEchartsdata.dispose();
     }
     TideEchartsdata = echarts.init(salinityChartElement);
+
     // 从 JSON 数据中提取 x 和 y 轴的数据
     const updatedTimes = tabledataJson.map(item => item.Updated);
     const waterLevels = tabledataJson.map(item => parseFloat(item.waterlevel));
+
     const options = {
-        visualMap: [
-            {
-                show: false,
-                type: 'continuous',
-                seriesIndex: 0,
-                min: Math.min(...waterLevels),
-                max: Math.max(...waterLevels)
-            }
-        ],
         tooltip: {
-            trigger: 'axis'
+            trigger: 'axis',
         },
         xAxis: {
             data: updatedTimes,
@@ -228,10 +235,10 @@ const Tideinit = () => {
                     color: "#b7cffc",
                     fontSize: 14,
                 },
-                formatter: function(value) {
-                // 提取时间部分
-                return value.split(' ')[1]; // 只显示时间部分
-            },
+                formatter: function (value) {
+                    // 提取时间部分
+                    return value.split(' ')[1]; // 只显示时间部分
+                },
             },
         },
         yAxis: {
@@ -261,7 +268,19 @@ const Tideinit = () => {
                 name: '水位',
                 data: waterLevels,
                 lineStyle: {
-                    width: 5 // 设置线条粗细为5
+                    width: 5, // 设置线条粗细为5
+                    color: {
+                        type: 'linear',
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [
+                            { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
+                            { offset: 1, color: '#0088ff' }  // 渐变结束颜色
+                        ],
+                        global: false // 缺省为 false
+                    }
                 }
             }
         ],
@@ -281,15 +300,6 @@ const Waveheightinit = () => {
     const WaveHeight = tabledataJson.map(item => parseFloat(item.Waveheight));
 
     const options = {
-        visualMap: [
-            {
-                show: false,
-                type: 'continuous',
-                seriesIndex: 0,
-                min: Math.min(...WaveHeight),
-                max: Math.max(...WaveHeight)
-            }
-        ],
         tooltip: {
             trigger: 'axis'
         },
@@ -301,10 +311,10 @@ const Waveheightinit = () => {
                     color: "#b7cffc",
                     fontSize: 14,
                 },
-                formatter: function(value) {
-                // 提取时间部分
-                return value.split(' ')[1]; // 只显示时间部分
-            },
+                formatter: function (value) {
+                    // 提取时间部分
+                    return value.split(' ')[1]; // 只显示时间部分
+                },
             },
         },
         yAxis: {
@@ -333,9 +343,33 @@ const Waveheightinit = () => {
                 showSymbol: false,
                 name: '波高',
                 data: WaveHeight,
-                lineStyle: { // 添加lineStyle属性
-                    width: 5 // 设置线条粗细为2
-                }
+                stack: "Total",
+                smooth: true,
+                lineStyle: { width: 0 },
+                showSymbol: false,
+                areaStyle: {
+                    opacity: 0.8,
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: "#0358c0" },
+                        { offset: 1, color: "#28F2E6" },
+                    ]),
+                },
+                emphasis: { focus: "series" },
+                // lineStyle: {
+                //     width: 5, // 设置线条粗细为5
+                //     color: {
+                //         type: 'linear',
+                //         x: 0,
+                //         y: 0,
+                //         x2: 0,
+                //         y2: 1,
+                //         colorStops: [
+                //             { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
+                //             { offset: 1, color: '#0088ff' }  // 渐变结束颜色
+                //         ],
+                //         global: false // 缺省为 false
+                //     }
+                // }
             }
         ],
         grid: { x: 35, y: 30, x2: 15, y2: 25 },
@@ -583,6 +617,7 @@ onBeforeUnmount(() => {
 .bottombox-slider :deep(.el-slider__marks-text) {
     color: white !important;
 }
+
 :deep(.el-slider__stop) {
     background-color: #fff;
     width: 2px;
