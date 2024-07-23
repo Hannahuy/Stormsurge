@@ -327,9 +327,6 @@ const Waveheightinit = () => {
                     color: "#b7cffc",
                     fontSize: 14
                 },
-                formatter: function (value) {
-                    return (1.805 * value + 0.03).toFixed(1);
-                }
             },
             splitLine: {
                 show: false
