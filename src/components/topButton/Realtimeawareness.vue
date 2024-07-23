@@ -56,9 +56,17 @@ import { ElMessage } from 'element-plus'
 const isShowSelected = ref(true); // 默认选中“显示”
 const toggleShow = () => {
     isShowSelected.value = true; // 选中“显示”
+    callUIInteraction({
+        FunctionName:'浮标模型',
+        State:true
+    })
 };
 const toggleHide = () => {
     isShowSelected.value = false; // 选中“隐藏”
+    callUIInteraction({
+        FunctionName:'浮标模型',
+        State:false
+    })
 };
 
 const timePick = ref(dayjs("2023-11-16").toDate());
@@ -86,7 +94,8 @@ const Backoff = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).subtract(1, 'hour').valueOf();
     callUIInteraction({
-        function: `咸潮模拟河道中心断面选择时间轴/` + dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'),
+        FunctionName: `实时感知时间轴`,
+        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 // 暂停/播放
@@ -113,7 +122,8 @@ const Fastforward = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).add(1, 'hour').valueOf();
     callUIInteraction({
-        function: `咸潮模拟时间轴/` + dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'),
+        FunctionName: `实时感知时间轴`,
+        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 
@@ -127,30 +137,6 @@ const formattedTime = computed(() => {
     } else {
         return time.format("YYYY/MM/DD HH:mm");
     }
-});
-
-const formattedMinTime = computed(() => {
-    return dayjs(min.value).format("YYYY-MM-DD");
-});
-
-const formattedMinTimeAdd1Day = computed(() => {
-    return dayjs(min.value).add(1, "day").format("YYYY-MM-DD");
-});
-
-const formattedMinTimeAdd2Days = computed(() => {
-    return dayjs(min.value).add(2, "days").format("YYYY-MM-DD");
-});
-
-const formattedMinTimeAdd3Days = computed(() => {
-    return dayjs(min.value).add(3, "days").format("YYYY-MM-DD");
-});
-
-const formattedMinTimeAdd4Days = computed(() => {
-    return dayjs(min.value).add(4, "days").format("YYYY-MM-DD");
-});
-
-const formattedMaxTime = computed(() => {
-    return dayjs(max.value).format("YYYY-MM-DD");
 });
 
 const style = computed(() => {
@@ -190,7 +176,8 @@ watch(timePlay, (newVal) => {
     const currentTime = dayjs(newVal);
     if (currentTime.minute() === 0 && currentTime.second() === 0) {
         callUIInteraction({
-            function: `咸潮模拟时间轴/` + dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'),
+            FunctionName: `实时感知时间轴`,
+            Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
         });
     }
     if (currentTime.isSame(dayjs(max.value))) {
@@ -205,7 +192,8 @@ const gettimePlay = (e) => {
         activePlay.value = "";
     }
     callUIInteraction({
-        function: `咸潮模拟时间轴/` + dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'),
+        FunctionName: `实时感知时间轴`,
+        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 
@@ -594,5 +582,9 @@ onBeforeUnmount(() => {
 
 .bottombox-slider :deep(.el-slider__marks-text) {
     color: white !important;
+}
+:deep(.el-slider__stop) {
+    background-color: #fff;
+    width: 2px;
 }
 </style>

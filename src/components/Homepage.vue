@@ -58,7 +58,14 @@ const lastActiveButton = ref('')
 const setActiveButton = (button) => {
   lastActiveButton.value = activeButton.value
   activeButton.value = button
-  console.log(`点击的按钮是：${button}，取消的按钮是：${lastActiveButton.value}`)
+  callUIInteraction({
+    FunctionName: `${button}`,
+    State:true,
+  });
+  callUIInteraction({
+    FunctionName: `${lastActiveButton.value}`,
+    State:false,
+  });
 }
 onMounted(() => {
   setActiveButton('虚拟仿真')

@@ -6,7 +6,7 @@
             </div>
             <div class="oneBox">
                 <el-checkbox-group v-model="checkListone" class="checkboxone"
-                @change="handleCheckChange('checkListone')">
+                    @change="handleCheckChange('checkListone')">
                     <el-checkbox label="无减灾设施" value="无减灾设施" />
                     <el-checkbox label="加防潮堤" value="加防潮堤" />
                     <el-checkbox label="加防汛沙袋" value="加防汛沙袋" />
@@ -46,13 +46,33 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { callUIInteraction, addResponseEventListener, } from "../../module/webrtcVideo/webrtcVideo.js";
 
-const checkListone = ref(['']);
-const checkListtwo = ref(['']);
-const checkListthree = ref(['']);
+const checkListone = ref([]);
+const checkListtwo = ref([]);
+const checkListthree = ref([]);
 
 const handleCheckChange = (listName) => {
     const list = eval(listName);
+    // 映射列表名称到描述
+    const descriptions = {
+        checkListone: '减灾措施情景库',
+        checkListtwo: '水位浪高情景库预设水位',
+        checkListthree: '水位浪高情景库预设浪高'
+    };
+    // 检查数组长度并打印当前选中的值
+    if (list.value.length > 0) {
+        callUIInteraction({
+            FunctionName: `${descriptions[listName]}` + list.value[list.value.length - 1],
+            State: true
+        });
+    } else {
+        callUIInteraction({
+            FunctionName: `${descriptions[listName]}`,
+            State: false
+        });
+    }
+    // 如果选中多个，保留最后一个
     if (list.value.length > 1) {
         list.value = [list.value[list.value.length - 1]];
     }

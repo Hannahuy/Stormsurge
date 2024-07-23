@@ -128,7 +128,8 @@ const Backoff = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).subtract(1, 'hour').valueOf();
     callUIInteraction({
-        function: `咸潮模拟河道中心断面选择时间轴/` + dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'),
+        FunctionName: `模拟预测时间轴`,
+        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 // 暂停/播放
@@ -155,7 +156,8 @@ const Fastforward = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).add(1, 'hour').valueOf();
     callUIInteraction({
-        function: `咸潮模拟时间轴/` + dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'),
+        FunctionName: `模拟预测时间轴`,
+        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 
@@ -169,30 +171,6 @@ const formattedTime = computed(() => {
     } else {
         return time.format("YYYY/MM/DD HH:mm");
     }
-});
-
-const formattedMinTime = computed(() => {
-    return dayjs(min.value).format("YYYY-MM-DD");
-});
-
-const formattedMinTimeAdd1Day = computed(() => {
-    return dayjs(min.value).add(1, "day").format("YYYY-MM-DD");
-});
-
-const formattedMinTimeAdd2Days = computed(() => {
-    return dayjs(min.value).add(2, "days").format("YYYY-MM-DD");
-});
-
-const formattedMinTimeAdd3Days = computed(() => {
-    return dayjs(min.value).add(3, "days").format("YYYY-MM-DD");
-});
-
-const formattedMinTimeAdd4Days = computed(() => {
-    return dayjs(min.value).add(4, "days").format("YYYY-MM-DD");
-});
-
-const formattedMaxTime = computed(() => {
-    return dayjs(max.value).format("YYYY-MM-DD");
 });
 
 const style = computed(() => {
@@ -232,7 +210,8 @@ watch(timePlay, (newVal) => {
     const currentTime = dayjs(newVal);
     if (currentTime.minute() === 0 && currentTime.second() === 0) {
         callUIInteraction({
-            function: `咸潮模拟时间轴/` + dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'),
+            FunctionName: `模拟预测时间轴/`,
+            Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
         });
     }
     if (currentTime.isSame(dayjs(max.value))) {
@@ -247,7 +226,8 @@ const gettimePlay = (e) => {
         activePlay.value = "";
     }
     callUIInteraction({
-        function: `咸潮模拟时间轴/` + dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'),
+        FunctionName: `模拟预测时间轴`,
+        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 const showbar = computed(() => {
@@ -611,5 +591,10 @@ onBeforeUnmount(() => {
 
 .bottombox-slider :deep(.el-slider__marks-text) {
     color: white !important;
+}
+
+:deep(.el-slider__stop) {
+    background-color: #fff;
+    width: 2px;
 }
 </style>

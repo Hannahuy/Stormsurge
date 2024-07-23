@@ -144,14 +144,16 @@ const swtichvalue = ref(false);
 let intervalId;
 const handleswtich = (e) => {
     callUIInteraction({
-        function: '是否实时/' + e,
+        FunctionNamename: '是否实时',
+        State:e
     });
     if (e) {
         const now = new Date();
         const totalSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
         timevalue.value = totalSeconds;
         callUIInteraction({
-            function: '虚拟仿真时间模拟/' + timevalue.value,
+            FunctionNamename: '虚拟仿真时间模拟',
+            Time:timevalue.value
         });
         intervalId = setInterval(() => {
             timevalue.value++;
@@ -204,7 +206,8 @@ const selectDetailIcon = (icon) => {
             break;
     }
     callUIInteraction({
-        function: '选中的天气详情图标/' + selectedWeatherIcon,
+        FunctionNamename: '选中的天气详情图标',
+        Weather:selectedWeatherIcon
     });
 };
 
@@ -216,7 +219,8 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = cloudyday;
             selectedIconDetail.value = 'sunnyDetail';
             callUIInteraction({
-                function: '选中的天气详情图标/晴天'
+                FunctionNamename: '选中的天气详情图标',
+                Weather:'晴天'
             });
             break;
         case 'heavyrain':
@@ -225,7 +229,8 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = rainstormday;
             selectedIconDetail.value = 'heavyrainDetail';
             callUIInteraction({
-                function: '选中的天气详情图标/中雨'
+                FunctionNamename: '选中的天气详情图标',
+                Weather:'中雨'
             });
             break;
         case 'fog':
@@ -234,7 +239,8 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = Fogday;
             selectedIconDetail.value = 'fogDetail';
             callUIInteraction({
-                function: '选中的天气详情图标/大雾'
+                FunctionNamename: '选中的天气详情图标',
+                Weather:'大雾'
             });
             break;
         default:
@@ -249,7 +255,8 @@ const addtime = () => {
     timevalue.value += 3600;
     sessionStorage.setItem('timevalue', timevalue.value);
     callUIInteraction({
-        function: '虚拟仿真时间模拟/' + timevalue.value,
+        FunctionName: '虚拟仿真时间模拟',
+        Time:timevalue.value
     });
 };
 // 时间模拟时间轴减少
@@ -257,7 +264,8 @@ const decreasetime = () => {
     timevalue.value -= 3600;
     sessionStorage.setItem('timevalue', timevalue.value);
     callUIInteraction({
-        function: '虚拟仿真时间模拟/' + timevalue.value,
+        FunctionName: '虚拟仿真时间模拟',
+        Time:timevalue.value
     });
 };
 // 风强度增加
@@ -265,7 +273,8 @@ const addintensity = () => {
     Windintensity.value++;
     sessionStorage.setItem('Windintensity', Windintensity.value);
     callUIInteraction({
-        function: '虚拟仿真风强度/' + Windintensity.value,
+        FunctionName: '虚拟仿真风强度',
+        FQD:Windintensity.value
     });
 };
 // 风强度减少
@@ -273,7 +282,8 @@ const decreaseintensity = () => {
     Windintensity.value--;
     sessionStorage.setItem('Windintensity', Windintensity.value);
     callUIInteraction({
-        function: '虚拟仿真风强度/' + Windintensity.value,
+        FunctionName: '虚拟仿真风强度',
+        FQD:Windintensity.value
     });
 };
 // 风向增加
@@ -281,7 +291,8 @@ const adddirection = () => {
     Winddirection.value++;
     sessionStorage.setItem('Winddirection', Winddirection.value);
     callUIInteraction({
-        function: '虚拟仿真风向/' + Winddirection.value,
+        FunctionName: '虚拟仿真风向',
+        FX:Winddirection.value
     });
 };
 // 风向增加
@@ -289,28 +300,32 @@ const decreasedirection = () => {
     Winddirection.value--;
     sessionStorage.setItem('Winddirection', Winddirection.value);
     callUIInteraction({
-        function: '虚拟仿真风向/' + Winddirection.value,
+        FunctionName: '虚拟仿真风向',
+        FX:Winddirection.value
     });
 };
 // 监听最后拖动的风强度
 const getWindintensity = (e) => {
     sessionStorage.setItem('Windintensity', e);
     callUIInteraction({
-        function: '虚拟仿真风强度/' + e,
+        FunctionName: '虚拟仿真风强度',
+        FQD:e
     });
 };
 // 监听最后拖动的风向
 const getWinddirection = (e) => {
     sessionStorage.setItem('Winddirection', e);
     callUIInteraction({
-        function: '虚拟仿真风向/' + e,
+        FunctionName: '虚拟仿真风向',
+        FQD:e
     });
 };
 // 监听最后拖动的时间模拟
 const gettimevalue = (e) => {
     sessionStorage.setItem('timevalue', e);
     callUIInteraction({
-        function: '虚拟仿真时间模拟/' + e,
+        FunctionName: '虚拟仿真时间模拟',
+        Time:e
     });
 };
 
@@ -332,7 +347,8 @@ onMounted(() => {
 
         if (iconPath && weatherIcons[iconPath]) {
             callUIInteraction({
-                function: '选中的天气详情图标/' + weatherIcons[iconPath],
+                FunctionName: '选中的天气详情图标',
+                Weather:weatherIcons[iconPath]
             });
         }
     } else {
@@ -342,7 +358,8 @@ onMounted(() => {
                     : '';
         if (iconPath && weatherIcons[iconPath]) {
             callUIInteraction({
-                function: '选中的天气详情图标/' + weatherIcons[iconPath],
+                FunctionName: '选中的天气详情图标',
+                Weather: weatherIcons[iconPath]
             });
         }
     }
