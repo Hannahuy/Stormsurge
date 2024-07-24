@@ -602,14 +602,14 @@ onBeforeUnmount(() => {
 .top-view-button-left {
   position: absolute;
   top: 5px;
-  left: 145px;
+  left: 7.8%;
   display: flex;
 }
 
 .top-view-button-right {
   position: absolute;
   top: 5px;
-  right: 145px;
+  right: 7.8%;
   display: flex;
 }
 

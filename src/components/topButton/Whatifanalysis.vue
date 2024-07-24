@@ -15,7 +15,7 @@
         </div>
         <div class="leftbox-top-content">
             <div class="leftbox-top-title">
-                <span>水位浪高情景库</span>
+                <span>水位情景库</span>
             </div>
             <div class="twoBox">
                 <div style="margin-top: 20px;">
@@ -23,16 +23,6 @@
                     <el-checkbox-group v-model="checkListtwo" class="checkboxtwo"
                         @change="handleCheckChange('checkListtwo')">
                         <el-checkbox label="0米" value="0m" />
-                        <el-checkbox label="1米" value="1m" />
-                        <el-checkbox label="2米" value="2m" />
-                        <el-checkbox label="3米" value="3m" />
-                        <el-checkbox label="4米" value="4m" />
-                    </el-checkbox-group>
-                </div>
-                <div style="margin-top: 10px;">
-                    <span class="twoBox-title">预设浪高</span>
-                    <el-checkbox-group v-model="checkListthree" class="checkboxthree"
-                        @change="handleCheckChange('checkListthree')">
                         <el-checkbox label="1米" value="1m" />
                         <el-checkbox label="2米" value="2m" />
                         <el-checkbox label="3米" value="3m" />
@@ -50,7 +40,6 @@ import { callUIInteraction, addResponseEventListener, } from "../../module/webrt
 
 const checkListone = ref([]);
 const checkListtwo = ref([]);
-const checkListthree = ref([]);
 
 const handleCheckChange = (listName) => {
     const list = eval(listName);
@@ -58,7 +47,6 @@ const handleCheckChange = (listName) => {
     const descriptions = {
         checkListone: '减灾措施情景库',
         checkListtwo: '水位浪高情景库预设水位',
-        checkListthree: '水位浪高情景库预设浪高'
     };
     // 检查数组长度并打印当前选中的值
     if (list.value.length > 0) {
@@ -89,7 +77,7 @@ onMounted(() => {
     top: 12%;
     left: 20px;
     width: 440px;
-    height: 510px;
+    height: 420px;
     padding: 20px;
     box-sizing: border-box;
     background-image: url('../../assets/img/框.png');
@@ -176,13 +164,6 @@ onMounted(() => {
     margin-top: 10px;
 }
 
-.checkboxthree {
-    display: flex;
-    align-items: center;
-    padding-left: 12px;
-    margin-top: 10px;
-}
-
 .twoBox:deep(.el-checkbox) {
     height: 45px;
 }
@@ -202,27 +183,6 @@ onMounted(() => {
     left: 5px;
     top: 0px;
     width: 6px;
-}
-
-.threeBox {
-    position: absolute;
-    top: 260px;
-    left: 250px;
-    width: 300px;
-    height: 520px;
-    background-image: url('../../assets/img/dialog4_back.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-
-.threeBox-title {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    height: 75px;
-    line-height: 110px;
-    font-size: 24px;
-    color: #D4E1FF;
 }
 
 .buttonitem {
