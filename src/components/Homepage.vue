@@ -565,6 +565,7 @@ onBeforeUnmount(() => {
   height: 100%;
   position: absolute;
   z-index: 1;
+  pointer-events: none;
 }
 
 .page>div {
@@ -696,6 +697,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   color: #b7cffc;
 }
+
 .hleftbox-1-content span {
   margin-left: 5px;
   margin-right: 5px;

@@ -1,25 +1,19 @@
 /*Copyright Epic Games, Inc. All Rights Reserved.*/
 :root {
 	/*Using colour scheme https://color.adobe.com/TD-Colors---Option-3-color-theme-10394433/*/
-	--colour1: #000000;
-	--colour2: #FFFFFF;
-	--colour3: #0585fe;
-	--colour4: #35b350;
-	--colour5: #ffab00;
-	--colour6: #1e1d22;
-	--colour7: #3c3b40;
+	--colour1:#000000;
+	--colour2:#FFFFFF;
+	--colour3:#0585fe;
+	--colour4:#35b350;
+	--colour5:#ffab00;
+	--colour6:#1e1d22;
+	--colour7:#3c3b40;
 }
 
-body {
-	margin: 0px;
-	/* background-color: black; */
+body{
+    margin: 0px;
+    background-color: black;
 	font-family: 'Montserrat', sans-serif;
-	width: 1920px;
-	height: 1080px;
-	overflow: hidden;
-	background-image: url('../../assets/img/微信图片_20240717134310.png');
-	background-repeat: no-repeat;
-	background-size: 100% 100%;
 }
 
 #playerUI {
@@ -28,26 +22,26 @@ body {
 }
 
 canvas {
-	image-rendering: crisp-edges;
-	position: absolute;
+    image-rendering: crisp-edges;
+    position: absolute;
 }
 
 video {
 	--aspect-ratio: calc(var(--height) / var(--width));
-	/* 给高度添加单位 */
-	--height-with-units: calc(var(--height) * 1px);
+  /* 给高度添加单位 */
+  --height-with-units: calc(var(--height) * 1px);
 	/* position: absolute; */
 	width: 100%;
 	height: 100%;
 	object-fit: fill;
 }
 
-#player {
+#player{
 	width: 100vw;
 	height: 100vh;
 }
 
-#videoPlayOverlay {
+#videoPlayOverlay{
 	position: absolute;
 	font-size: 1.8em;
 	width: 100%;
@@ -56,7 +50,7 @@ video {
 }
 
 /* State for element to be clickable */
-.clickableState {
+.clickableState{
 	align-items: center;
 	justify-content: center;
 	display: flex;
@@ -64,7 +58,7 @@ video {
 }
 
 /* State for element to show text, this is for informational use*/
-.textDisplayState {
+.textDisplayState{
 	align-items: center;
 	justify-content: center;
 	display: flex;
@@ -72,17 +66,17 @@ video {
 }
 
 /* State to hide overlay, WebRTC communication is in progress and or is playing */
-.hiddenState {
+.hiddenState{
 	display: none;
 }
 
-#playButton {
+#playButton{
 	display: inline-block;
 	height: auto;
 	z-index: 30;
 }
 
-img#playButton {
+img#playButton{
 	max-width: 241px;
 	width: 10%;
 }
@@ -125,14 +119,14 @@ img#playButton {
 	border: 3px solid var(--colour3);
 	transition: 0.25s ease;
 	padding-left: 0.55rem;
-	padding-top: 0.55rem;
+    padding-top: 0.55rem;
 }
 
 #overlay button:active {
 	border: 3px solid var(--colour3);
 	background-color: var(--colour7);
 	padding-left: 0.55rem;
-	padding-top: 0.55rem;
+    padding-top: 0.55rem;
 }
 
 #overlay img {
@@ -154,7 +148,7 @@ img#playButton {
 	position: absolute;
 	top: 0;
 	transform: translateY(25%);
-	left: 125%;
+  	left: 125%;
 	z-index: 20;
 }
 
@@ -166,19 +160,19 @@ img#playButton {
 #connection .tooltiptext {
 	top: 125%;
 	transform: translateX(-25%);
-	left: 0;
+  	left: 0;
 	z-index: 20;
 	padding: 5px 10px;
 }
 
 #settings-panel .tooltiptext {
 	display: block;
-	top: 125%;
-	transform: translateX(-50%);
-	left: 0;
-	z-index: 20;
-	padding: 5px 10px;
-	border: 3px solid var(--colour5);
+    top: 125%;
+    transform: translateX(-50%);
+    left: 0;
+    z-index: 20;
+    padding: 5px 10px;
+    border: 3px solid var(--colour5);
 	width: max-content;
 }
 
@@ -191,7 +185,7 @@ img#playButton {
 	display: block;
 }
 
-#controls>* {
+#controls > * {
 	margin-bottom: 0.5rem;
 	border-radius: 50%;
 	display: block;
@@ -230,18 +224,12 @@ img#playButton {
 }
 
 .noselect {
-	-webkit-touch-callout: none;
-	/* iOS Safari */
-	-webkit-user-select: none;
-	/* Safari */
-	-khtml-user-select: none;
-	/* Konqueror HTML */
-	-moz-user-select: none;
-	/* Old versions of Firefox */
-	-ms-user-select: none;
-	/* Internet Explorer/Edge */
-	user-select: none;
-	/* Non-prefixed version, currently
+	-webkit-touch-callout: none; /* iOS Safari */
+	  -webkit-user-select: none; /* Safari */
+	   -khtml-user-select: none; /* Konqueror HTML */
+		 -moz-user-select: none; /* Old versions of Firefox */
+		  -ms-user-select: none; /* Internet Explorer/Edge */
+			  user-select: none; /* Non-prefixed version, currently
 									supported by Chrome, Edge, Opera and Firefox */
 }
 
@@ -275,10 +263,10 @@ img#playButton {
 #heading {
 	display: inline-block;
 	font-size: 2em;
-	margin-block-start: 0.67em;
-	margin-block-end: 0.67em;
-	margin-inline-start: 0px;
-	margin-inline-end: 0px;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
 	position: relative;
 	padding: 0 0 0 2rem;
 }
@@ -295,8 +283,7 @@ img#playButton {
 #close:after {
 	padding-left: 0.5rem;
 	display: inline-block;
-	content: "\00d7";
-	/* This will render the 'X' */
+	content: "\00d7"; /* This will render the 'X' */
 }
 
 #close:hover {
@@ -316,7 +303,7 @@ img#playButton {
 	margin: 0.5rem 0;
 }
 
-.settings-text {
+.settings-text{
 	margin-right: 2rem;
 	display: flex;
 }
@@ -325,44 +312,24 @@ img#playButton {
 .tgl-switch {
 	vertical-align: middle;
 	display: inline-block;
-}
+  }
 
-.tgl-switch .tgl {
-	display: none;
-}
+  .tgl-switch .tgl {
+	  display:none;
+  }
 
-.tgl,
-.tgl:after,
-.tgl:before,
-.tgl *,
-.tgl *:after,
-.tgl *:before,
-.tgl+.tgl-slider {
+  .tgl, .tgl:after, .tgl:before, .tgl *, .tgl *:after, .tgl *:before, .tgl + .tgl-slider {
 	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-}
-
-.tgl::-moz-selection,
-.tgl:after::-moz-selection,
-.tgl:before::-moz-selection,
-.tgl *::-moz-selection,
-.tgl *:after::-moz-selection,
-.tgl *:before::-moz-selection,
-.tgl+.tgl-slider::-moz-selection {
+			box-sizing: border-box;
+  }
+  .tgl::-moz-selection, .tgl:after::-moz-selection, .tgl:before::-moz-selection, .tgl *::-moz-selection, .tgl *:after::-moz-selection, .tgl *:before::-moz-selection, .tgl + .tgl-slider::-moz-selection {
 	background: none;
-}
-
-.tgl::selection,
-.tgl:after::selection,
-.tgl:before::selection,
-.tgl *::selection,
-.tgl *:after::selection,
-.tgl *:before::selection,
-.tgl+.tgl-slider::selection {
+  }
+  .tgl::selection, .tgl:after::selection, .tgl:before::selection, .tgl *::selection, .tgl *:after::selection, .tgl *:before::selection, .tgl + .tgl-slider::selection {
 	background: none;
-}
+  }
 
-.tgl+.tgl-slider {
+  .tgl + .tgl-slider {
 	outline: 0;
 	display: block;
 	width: 40px;
@@ -370,53 +337,50 @@ img#playButton {
 	position: relative;
 	cursor: pointer;
 	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
+	   -moz-user-select: none;
+		-ms-user-select: none;
+			user-select: none;
+  }
 
-.tgl+.tgl-slider:after,
-.tgl+.tgl-slider:before {
+  .tgl + .tgl-slider:after, .tgl + .tgl-slider:before {
 	position: relative;
 	display: block;
 	content: "";
 	width: 50%;
 	height: 100%;
-}
-
-.tgl+.tgl-slider:after {
+  }
+  .tgl + .tgl-slider:after {
 	left: 0;
-}
-
-.tgl+.tgl-slider:before {
+  }
+  .tgl + .tgl-slider:before {
 	display: none;
-}
+  }
 
-.tgl-flat+.tgl-slider {
+  .tgl-flat + .tgl-slider {
 	padding: 2px;
 	-webkit-transition: all .2s ease;
 	transition: all .2s ease;
 	background: var(--colour6);
 	border: 3px solid var(--colour7);
 	border-radius: 2em;
-}
+  }
 
-.tgl-flat+.tgl-slider:after {
+  .tgl-flat + .tgl-slider:after {
 	-webkit-transition: all .2s ease;
 	transition: all .2s ease;
 	background: var(--colour7);
 	content: "";
 	border-radius: 1em;
-}
+  }
 
-.tgl-flat:checked+.tgl-slider {
+  .tgl-flat:checked + .tgl-slider {
 	border: 3px solid var(--colour3);
-}
+  }
 
-.tgl-flat:checked+.tgl-slider:after {
+  .tgl-flat:checked + .tgl-slider:after {
 	left: 50%;
 	background: var(--colour3);
-}
+  }
 
 .subtitle-text {
 	margin: 0 0 0 1rem;
@@ -449,8 +413,7 @@ img#playButton {
 
 #hiddenInput {
 	position: absolute;
-	left: -10%;
-	/* Although invisible, push off-screen to prevent user interaction. */
+	left: -10%;   /* Although invisible, push off-screen to prevent user interaction. */
 	width: 0px;
 	opacity: 0;
 }
@@ -471,46 +434,43 @@ input {
 }
 
 .warning {
-	box-sizing: border-box;
-	position: relative;
-	transform: scale(var(--ggs, 1));
-	width: 20px;
-	height: 20px;
-	border: 2px solid;
-	border-radius: 40px;
+    box-sizing: border-box;
+    position: relative;
+    transform: scale(var(--ggs,1));
+    width: 20px;
+    height: 20px;
+    border: 2px solid;
+    border-radius: 40px;
 	display: none;
 }
-
 .warning::after,
 .warning::before {
-	content: "";
-	display: block;
-	box-sizing: border-box;
-	position: absolute;
-	border-radius: 3px;
-	width: 2px;
-	background: currentColor;
-	left: 7px
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    border-radius: 3px;
+    width: 2px;
+    background: currentColor;
+    left: 7px
 }
-
 .warning::after {
-	top: 2px;
-	height: 8px
+    top: 2px;
+    height: 8px
 }
-
 .warning::before {
-	height: 2px;
-	bottom: 2px
+    height: 2px;
+    bottom: 2px
 }
 
 /* Flat buttons */
 input[type="button"] {
 	background-color: transparent;
-	color: var(--colour2);
-	font-family: 'Montserrat';
-	border: 3px solid var(--colour3);
-	border-radius: 1rem;
-	font-size: 0.75rem;
+    color: var(--colour2);
+    font-family: 'Montserrat';
+    border: 3px solid var(--colour3);
+    border-radius: 1rem;
+    font-size: 0.75rem;
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;
 }
@@ -519,7 +479,6 @@ input[type="button"]:hover {
 	background-color: var(--colour3);
 	transition: ease 0.3s;
 }
-
 input[type="button"]:active {
 	background-color: transparent;
 }
@@ -532,11 +491,11 @@ input[type="button"]:active {
 select,
 input[type="number"] {
 	background-color: var(--colour7);
-	color: var(--colour2);
-	border: 1px solid var(--colour6);
-	padding: 0.25rem;
-	font-family: 'Montserrat';
-	border-radius: 0.25rem;
+    color: var(--colour2);
+    border: 1px solid var(--colour6);
+    padding: 0.25rem;
+    font-family: 'Montserrat';
+    border-radius: 0.25rem;
 }
 
 input[type=number]::-webkit-inner-spin-button {
@@ -586,17 +545,17 @@ object {
 
 #afkOverlay {
 	z-index: 999;
-	background-color: rgba(30, 29, 34, 0.5);
-	display: inline-block;
-	height: 100vh;
-	width: 100vw;
-	line-height: 100vh;
-	text-align: center;
+    background-color: rgba(30, 29, 34, 0.5);
+    display: inline-block;
+    height: 100vh;
+    width: 100vw;
+    line-height: 100vh;
+    text-align: center;
 	overflow: hidden;
 }
 
 #afkOverlay center {
 	display: inline-block;
-	line-height: 1.5;
-	height: 100vh;
+    line-height: 1.5;
+    height: 100vh;
 }
