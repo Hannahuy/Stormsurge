@@ -415,7 +415,7 @@ onBeforeUnmount(() => {
 }
 
 .leftbox-top-title {
-    width: 420px;
+    width: 380px;
     height: 45px;
     background-image: url('../../assets/img/标题背景.png');
     background-size: 100% 100%;
@@ -461,13 +461,13 @@ onBeforeUnmount(() => {
 }
 
 #TideEcharts {
-    width: 420px;
+    width: 380px;
     height: 240px;
     margin-top: 5px;
 }
 
 #WaveheightEcharts {
-    width: 420px;
+    width: 380px;
     height: 240px;
     margin-top: 5px;
 }
@@ -527,7 +527,7 @@ onBeforeUnmount(() => {
 }
 
 :deep(.el-input__inner) {
-    margin-right: 20px;
+    margin-right: 15px;
     color: rgb(0, 113, 204);
     cursor: pointer;
 }

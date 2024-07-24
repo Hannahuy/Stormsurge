@@ -316,20 +316,20 @@ onBeforeUnmount(() => {
     background-repeat: no-repeat;
     width: 460px;
     height: 300px;
-    top: 480px;
-    left: 20px;
+    top: 280px;
+    left: 15px;
 }
 
 #TideEcharts {
     padding: 0 20px 0 20px;
-    width: 420px;
+    width: 460px;
     height: 240px;
     margin-top: 5px;
 }
 
 #WaveheightEcharts {
     padding: 0 20px 0 20px;
-    width: 420px;
+    width: 460px;
     height: 240px;
     margin-top: 5px;
 }
@@ -390,7 +390,7 @@ onBeforeUnmount(() => {
 }
 
 :deep(.el-input__inner) {
-    margin-right: 20px;
+    margin-right: 15px;
     color: rgb(0, 113, 204);
     cursor: pointer;
 }

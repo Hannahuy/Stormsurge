@@ -233,14 +233,13 @@ const Tideinit = () => {
             global: false // 缺省为 false
           }
         },
-        data: [10, 52, 200, 334, 390, 330, 220]
+        data: [1.0, 5.2, 2.0, 3.3, 3.9, 3.3, 2.2]
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
   };
   TideEchartsdata.setOption(options);
 };
-
 let TideEchartsdatas = null;
 const Tideinits = () => {
   const salinityChartElement = document.getElementById("hleftbox-2-content-echarts");
@@ -287,7 +286,7 @@ const Tideinits = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: [150, 230, 224, 218, 135, 147, 260],
+        data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
         lineStyle: {
           width: 5, // 设置线条粗细为5
           color: {
@@ -355,7 +354,7 @@ const Tideinitss = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: [150, 230, 224, 218, 135, 147, 260],
+        data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
         lineStyle: {
           width: 5, // 设置线条粗细为5
           color: {
@@ -453,7 +452,7 @@ const Tideinitsss = () => {
             global: false // 缺省为 false
           }
         },
-        data: [10, 52, 200, 334, 390, 330, 220]
+        data: [1.0, 5.2, 2.0, 3.3, 3.9, 3.3, 2.2]
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
@@ -506,7 +505,7 @@ const Tideinitssss = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: [150, 230, 224, 218, 135, 147, 260],
+        data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
         lineStyle: {
           width: 5, // 设置线条粗细为5
           color: {
