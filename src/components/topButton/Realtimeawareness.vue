@@ -263,12 +263,10 @@ const Tideinit = () => {
         },
         series: [
             {
-                type: 'line',
-                showSymbol: false,
+                type: 'bar', // 将类型改为 'bar'
                 name: '水位',
                 data: waterLevels,
-                lineStyle: {
-                    width: 5, // 设置线条粗细为5
+                itemStyle: {
                     color: {
                         type: 'linear',
                         x: 0,
@@ -288,6 +286,7 @@ const Tideinit = () => {
     };
     TideEchartsdata.setOption(options);
 };
+
 let WaveheightEchartsdata = null;
 const Waveheightinit = () => {
     const salinityChartElement = document.getElementById("WaveheightEcharts");
@@ -350,8 +349,8 @@ const Waveheightinit = () => {
                 areaStyle: {
                     opacity: 0.8,
                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: "#0358c0" },
-                        { offset: 1, color: "#28F2E6" },
+                        { offset: 1, color: "#0358c0" },
+                        { offset: 0, color: "#28F2E6" },
                     ]),
                 },
                 emphasis: { focus: "series" },

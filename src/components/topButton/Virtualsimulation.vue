@@ -61,20 +61,14 @@
             <div style="margin-top: 15px;" class="leftbox-top-title">
                 <span>时间模拟</span>
             </div>
-            <div class="leftbox-middle-title">
-                <span>1:00h</span>
-                <span>6:00h</span>
-                <span>12:00h</span>
-                <span>18:00h</span>
-                <span>24:00h</span>
-            </div>
             <div class="leftbox-middle-content">
-                <img src="../../assets/img/small_icon.png" :class="{ 'disabled': swtichvalue }" alt="" class="imgbutton"
-                    @click="decreasetime">
-                <el-slider v-model="timevalue" :disabled="swtichvalue" style="width: 320px;margin-left: 20px;" :min="1"
-                    :max="86400" :step="1" @input="updateTimeDisplay" @change="gettimevalue" :show-tooltip="false" />
-                <img src="../../assets/img/big_icon.png" :class="{ 'disabled': swtichvalue }" alt="" class="imgbutton"
-                    @click="addtime">
+                <img src="../../assets/img/small_icon.png" :class="{ disabled: swtichvalue }" alt="" class="imgbutton"
+                    @click="decreasetime" />
+                <el-slider v-model="timevalue" :disabled="swtichvalue" style="width: 320px; margin-left: 20px;" :min="1"
+                    :max="86400" :step="1" @input="updateTimeDisplay" @change="gettimevalue" :show-tooltip="false"
+                    :marks="generateMarks()" />
+                <img src="../../assets/img/big_icon.png" :class="{ disabled: swtichvalue }" alt="" class="imgbutton"
+                    @click="addtime" />
             </div>
             <div class="leftbox-middle-bottom">
                 <div class="leftbox-middle-bottom-content">
@@ -119,6 +113,14 @@ const currentDate = ref('');
 const timevalue = ref(sessionStorage.getItem('timevalue') ? parseInt(sessionStorage.getItem('timevalue')) : 34200);
 const Windintensity = ref(sessionStorage.getItem('Windintensity') ? parseInt(sessionStorage.getItem('Windintensity')) : 0);
 const Winddirection = ref(sessionStorage.getItem('Winddirection') ? parseInt(sessionStorage.getItem('Winddirection')) : 0);
+const generateMarks = () => {
+    const marks = {};
+    for (let i = 0; i <= 24; i += 5) { // 每3小时
+        const seconds = i * 3600; // 每小时的秒数
+        marks[seconds] = `${i}h`; // 显示为小时
+    }
+    return marks;
+};
 // 时间模拟时间轴
 const updateTimeDisplay = (value) => {
     timevalue.value = value;
@@ -159,9 +161,9 @@ const handleswtich = (e) => {
         intervalId = setInterval(() => {
             timevalue.value++;
             callUIInteraction({
-            FunctionName: '虚拟仿真时间模拟',
-            Time: timevalue.value
-        });
+                FunctionName: '虚拟仿真时间模拟',
+                Time: timevalue.value
+            });
         }, 1000);
     } else {
         clearInterval(intervalId);
@@ -218,7 +220,7 @@ const selectDetailIcon = (icon) => {
     }
     callUIInteraction({
         FunctionName: '选中的天气详情图标',
-        Weather:selectedWeatherIcon
+        Weather: selectedWeatherIcon
     });
 };
 
@@ -231,7 +233,7 @@ const updateWeatherDetails = (icon) => {
             selectedIconDetail.value = 'sunnyDetail';
             callUIInteraction({
                 FunctionName: '选中的天气详情图标',
-                Weather:'晴天'
+                Weather: '晴天'
             });
             break;
         case 'heavyrain':
@@ -241,7 +243,7 @@ const updateWeatherDetails = (icon) => {
             selectedIconDetail.value = 'heavyrainDetail';
             callUIInteraction({
                 FunctionName: '选中的天气详情图标',
-                Weather:'中雨'
+                Weather: '中雨'
             });
             break;
         case 'fog':
@@ -251,7 +253,7 @@ const updateWeatherDetails = (icon) => {
             selectedIconDetail.value = 'fogDetail';
             callUIInteraction({
                 FunctionName: '选中的天气详情图标',
-                Weather:'大雾'
+                Weather: '大雾'
             });
             break;
         case 'snow':
@@ -261,7 +263,7 @@ const updateWeatherDetails = (icon) => {
             selectedIconDetail.value = 'sunnyDetail';
             callUIInteraction({
                 FunctionName: '选中的天气详情图标',
-                Weather:'小雪'
+                Weather: '小雪'
             });
             break;
         default:
@@ -452,16 +454,6 @@ onMounted(() => {
     box-sizing: border-box;
 }
 
-.leftbox-middle-title {
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    margin-top: 30px;
-    font-size: 14px;
-    /* padding: 0 10px 0 30px; */
-}
-
 .leftbox-middle-content {
     /* width: 100%; */
     height: 55px;
@@ -470,7 +462,7 @@ onMounted(() => {
     justify-content: center;
     color: #E6E6E6;
     font-size: 14px;
-    margin-top: 5px;
+    margin-top: 55px;
 }
 
 .leftbox-middle-bottom {
@@ -602,5 +594,18 @@ onMounted(() => {
 :deep(.el-slider__runway.is-disabled .el-slider__bar) {
     height: 2px;
     background-color: #00A8D2;
+}
+
+:deep(.el-slider__stop) {
+    background-color: #fff;
+    width: 2px;
+    height: 4px;
+    top: -1px;
+}
+
+:deep(.el-slider__marks-text) {
+    color: white;
+    margin-top: -50px;
+    font-size: 16px;
 }
 </style>

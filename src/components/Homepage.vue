@@ -287,21 +287,18 @@ const Tideinits = () => {
         showSymbol: false,
         name: '波高',
         data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
-        lineStyle: {
-          width: 5, // 设置线条粗细为5
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
-              { offset: 1, color: '#0088ff' }  // 渐变结束颜色
-            ],
-            global: false // 缺省为 false
-          }
-        }
+        stack: "Total",
+        smooth: true,
+        lineStyle: { width: 0 },
+        showSymbol: false,
+        areaStyle: {
+          opacity: 0.8,
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 1, color: "#0358c0" },
+            { offset: 0, color: "#28F2E6" },
+          ]),
+        },
+        emphasis: { focus: "series" },
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
@@ -355,21 +352,18 @@ const Tideinitss = () => {
         showSymbol: false,
         name: '波高',
         data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
-        lineStyle: {
-          width: 5, // 设置线条粗细为5
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
-              { offset: 1, color: '#0088ff' }  // 渐变结束颜色
-            ],
-            global: false // 缺省为 false
-          }
-        }
+        stack: "Total",
+        smooth: true,
+        lineStyle: { width: 0 },
+        showSymbol: false,
+        areaStyle: {
+          opacity: 0.8,
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 1, color: "#0358c0" },
+            { offset: 0, color: "#28F2E6" },
+          ]),
+        },
+        emphasis: { focus: "series" },
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
@@ -506,21 +500,18 @@ const Tideinitssss = () => {
         showSymbol: false,
         name: '波高',
         data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
-        lineStyle: {
-          width: 5, // 设置线条粗细为5
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
-              { offset: 1, color: '#0088ff' }  // 渐变结束颜色
-            ],
-            global: false // 缺省为 false
-          }
-        }
+        stack: "Total",
+        smooth: true,
+        lineStyle: { width: 0 },
+        showSymbol: false,
+        areaStyle: {
+          opacity: 0.8,
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 1, color: "#0358c0" },
+            { offset: 0, color: "#28F2E6" },
+          ]),
+        },
+        emphasis: { focus: "series" },
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
