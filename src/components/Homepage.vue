@@ -51,28 +51,28 @@
               <img src="../assets/img/风场@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
                 <span>最大潮位：3.0m</span>
-                <span>07-23 11:00</span>
+                <span>07-26 11:00</span>
               </div>
             </div>
             <div class="hleftbox-1-content-1">
               <img src="../assets/img/海温@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
                 <span>最小潮位：0.5m</span>
-                <span>07-23 05:00</span>
+                <span>07-26 05:00</span>
               </div>
             </div>
             <div class="hleftbox-1-content-1">
               <img src="../assets/img/海浪@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
                 <span>最大波高：2.0m</span>
-                <span>07-23 11:00</span>
+                <span>07-26 11:00</span>
               </div>
             </div>
             <div class="hleftbox-1-content-1">
               <img src="../assets/img/流场@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
                 <span>最小波高：0.2m</span>
-                <span>07-23 05:00</span>
+                <span>07-26 05:00</span>
               </div>
             </div>
           </div>
@@ -156,6 +156,43 @@ const setActiveButton = (button) => {
     });
   }
 }
+// 30天
+const generateDates = (days) => {
+  const dates = [];
+  const today = new Date();
+  today.setDate(today.getDate() + 1); // 从明天开始
+  for (let i = 0; i < days; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    dates.push(date.toLocaleDateString()); // 格式化日期
+  }
+  return dates;
+};
+// 随机潮位
+const generateRandomDataT = (length) => {
+  const data = [];
+  for (let i = 0; i < length; i++) {
+    data.push((Math.random() * 10 - 5).toFixed(2)); // 生成-5到5之间的随机数
+  }
+  return data;
+};
+// 随机波高
+const generateRandomDataZ = (length) => {
+  const data = [];
+  for (let i = 0; i < length; i++) {
+    data.push((Math.random() * 4.9 + 0.1).toFixed(2)); // 生成0.1到5之间的随机数
+  }
+  return data;
+};
+// 24小时
+const generateHours = (hours) => {
+  const timeLabels = [];
+  for (let i = 0; i < hours; i++) {
+    const hour = i < 10 ? `0${i}:00` : `${i}:00`; // 格式化为两位数
+    timeLabels.push(hour);
+  }
+  return timeLabels;
+};
 
 let TideEchartsdata = null;
 const Tideinit = () => {
@@ -164,6 +201,11 @@ const Tideinit = () => {
     TideEchartsdata.dispose();
   }
   TideEchartsdata = echarts.init(salinityChartElement);
+
+  const days = 30; // 未来30天
+  const dates = generateDates(days);
+  const randomData = generateRandomDataT(days);
+
   const options = {
     tooltip: {
       trigger: 'axis',
@@ -180,7 +222,7 @@ const Tideinit = () => {
     xAxis: [
       {
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        data: dates,
         axisTick: {
           alignWithLabel: true
         },
@@ -233,7 +275,7 @@ const Tideinit = () => {
             global: false // 缺省为 false
           }
         },
-        data: [1.0, 5.2, 2.0, 3.3, 3.9, 3.3, 2.2]
+        data: randomData // 使用随机生成的数据
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
@@ -247,12 +289,16 @@ const Tideinits = () => {
     TideEchartsdatas.dispose();
   }
   TideEchartsdatas = echarts.init(salinityChartElement);
+  const days = 30; // 未来30天
+  const dates = generateDates(days);
+  const randomData = generateRandomDataZ(days);
+
   const options = {
     tooltip: {
       trigger: 'axis',
     },
     xAxis: {
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      data: dates, // 使用生成的日期
       axisLabel: {
         show: true,
         textStyle: {
@@ -286,11 +332,10 @@ const Tideinits = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
+        data: randomData, // 使用随机生成的数据
         stack: "Total",
         smooth: true,
         lineStyle: { width: 0 },
-        showSymbol: false,
         areaStyle: {
           opacity: 0.8,
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -312,12 +357,17 @@ const Tideinitss = () => {
     TideEchartsdatass.dispose();
   }
   TideEchartsdatass = echarts.init(salinityChartElement);
+
+  const hours = 24; // 24小时
+  const timeLabels = generateHours(hours);
+  const randomData = generateRandomDataZ(hours);
+
   const options = {
     tooltip: {
       trigger: 'axis',
     },
     xAxis: {
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      data: timeLabels, // 使用生成的时间标签
       axisLabel: {
         show: true,
         textStyle: {
@@ -351,11 +401,10 @@ const Tideinitss = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
+        data: randomData, // 使用随机生成的数据
         stack: "Total",
         smooth: true,
         lineStyle: { width: 0 },
-        showSymbol: false,
         areaStyle: {
           opacity: 0.8,
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -377,6 +426,9 @@ const Tideinitsss = () => {
     TideEchartsdatasss.dispose();
   }
   TideEchartsdatasss = echarts.init(salinityChartElement);
+  const hours = 24; // 24小时
+  const timeLabels = generateHours(hours);
+  const randomData = generateRandomDataT(hours);
   const options = {
     tooltip: {
       trigger: 'axis',
@@ -393,7 +445,7 @@ const Tideinitsss = () => {
     xAxis: [
       {
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        data: timeLabels, // 使用生成的时间标签
         axisTick: {
           alignWithLabel: true
         },
@@ -446,7 +498,7 @@ const Tideinitsss = () => {
             global: false // 缺省为 false
           }
         },
-        data: [1.0, 5.2, 2.0, 3.3, 3.9, 3.3, 2.2]
+        data: randomData // 使用随机生成的数据
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
@@ -460,12 +512,16 @@ const Tideinitssss = () => {
     TideEchartsdatassss.dispose();
   }
   TideEchartsdatassss = echarts.init(salinityChartElement);
+  const hours = 24; // 24小时
+  const timeLabels = generateHours(hours);
+  const randomData = generateRandomDataZ(hours);
+
   const options = {
     tooltip: {
       trigger: 'axis',
     },
     xAxis: {
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      data: timeLabels, // 使用生成的时间标签
       axisLabel: {
         show: true,
         textStyle: {
@@ -499,11 +555,10 @@ const Tideinitssss = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: [1.5, 2.3, 2.2, 2.1, 1.3, 1.4, 2.6],
+        data: randomData, // 使用随机生成的数据
         stack: "Total",
         smooth: true,
         lineStyle: { width: 0 },
-        showSymbol: false,
         areaStyle: {
           opacity: 0.8,
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
