@@ -84,7 +84,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 import dayjs from "dayjs";
-import { callUIInteraction } from "../../module/webrtcVideo/webrtcVideo.js";
+import { callUIInteraction, addResponseEventListener } from "../../module/webrtcVideo/webrtcVideo.js";
 import tabledataJson from "/public/data/实时监测.json";
 import { ElMessage } from 'element-plus';
 
@@ -262,6 +262,11 @@ const shownextbar = computed(() => {
     return activeButton.value === "tide";
 });
 
+const myHandleResponseFunction = (data) => {
+  const datajson = JSON.parse(data);
+  console.log(datajson);
+}
+
 onMounted(() => {
     gettable()
     callUIInteraction({
@@ -271,6 +276,7 @@ onMounted(() => {
         FunctionName: `海浪预测时间轴`,
         Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
+    addResponseEventListener("handle_responses", myHandleResponseFunction);
 })
 onBeforeUnmount(() => {
 
