@@ -158,6 +158,10 @@ const handleswtich = (e) => {
         });
         intervalId = setInterval(() => {
             timevalue.value++;
+            callUIInteraction({
+            FunctionName: '虚拟仿真时间模拟',
+            Time: timevalue.value
+        });
         }, 1000);
     } else {
         clearInterval(intervalId);

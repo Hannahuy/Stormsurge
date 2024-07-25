@@ -115,7 +115,6 @@ const toggleBackground = (button) => {
             timePlay.value = dayjs("2024-06-06 20:00").valueOf();
         }
 
-        // Update min and max based on the selected date
         min.value = dayjs(timePick.value).startOf("day").valueOf();
         max.value = dayjs(timePick.value).endOf("day").valueOf();
 
@@ -227,7 +226,16 @@ const marks = computed(() => {
 watch(timePick, (newVal) => {
     const selectedDate = dayjs(newVal);
     min.value = selectedDate.startOf("day").valueOf();
-    max.value = selectedDate.endOf("day").valueOf(); // Adjust to 1-day range
+    max.value = selectedDate.endOf("day").valueOf();
+
+    // 根据日期设置时间进度
+    if (selectedDate.isSame(dayjs("2024-03-21"), 'day')) {
+        timePlay.value = dayjs("2024-03-21 12:00").valueOf();
+    } else if (selectedDate.isSame(dayjs("2024-06-06"), 'day')) {
+        timePlay.value = dayjs("2024-06-06 20:00").valueOf();
+    } else {
+        timePlay.value = selectedDate.startOf("day").valueOf();
+    }
 });
 watch(timePlay, (newVal) => {
     const currentTime = dayjs(newVal);
@@ -282,7 +290,6 @@ onBeforeUnmount(() => {
 
 });
 </script>
-
 
 <style scoped>
 .leftbox-top {
