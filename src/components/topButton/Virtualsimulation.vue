@@ -14,7 +14,6 @@
             </div>
             <div class="leftbox-top-title" style="margin-top: 20px;">
                 <span>天气模拟</span>
-                <!-- <span>Weather simulation</span> -->
             </div>
             <div class="Weather-type-icon">
                 <img src="../../assets/img/weather_sunny_icon.png" alt="Sunny"
@@ -26,6 +25,9 @@
                 <img src="../../assets/img/Mediumfog.png" alt="Medium Fog"
                     :class="{ 'selected': selectedIcon === 'fog', 'disabled': swtichvalue }"
                     @click="selectIcon('fog')" />
+                <img src="../../assets/img/heavysnow.png" alt="Moderate Snow"
+                    :class="{ 'selected': selectedIcon === 'snow', 'disabled': swtichvalue }"
+                    @click="selectIcon('snow')" />
             </div>
             <div class="Weather-type-icon-detailed">
                 <img :src="weatherone" alt=""
@@ -58,7 +60,6 @@
             </div>
             <div style="margin-top: 15px;" class="leftbox-top-title">
                 <span>时间模拟</span>
-                <!-- <span>Time simulation</span> -->
             </div>
             <div class="leftbox-middle-title">
                 <span>1:00h</span>
@@ -94,9 +95,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="leftbox-middle">
-            
-        </div> -->
     </div>
 </template>
 
@@ -112,6 +110,9 @@ import rainstormday from '../../assets/img/rainstorm.png';
 import Lightfogday from '../../assets/img/Lightfog.png';
 import Mediumfogday from '../../assets/img/Mediumfog.png';
 import Fogday from '../../assets/img/Fog.png';
+import lightsnow from '../../assets/img/lightsnow.png';
+import moderatesnow from '../../assets/img/moderatesnow.png';
+import heavysnow from '../../assets/img/heavysnow.png';
 
 const currentTime = ref('');
 const currentDate = ref('');
@@ -145,7 +146,7 @@ let intervalId;
 const handleswtich = (e) => {
     callUIInteraction({
         FunctionNamename: '是否实时',
-        State:e
+        State: e
     });
     if (e) {
         const now = new Date();
@@ -153,7 +154,7 @@ const handleswtich = (e) => {
         timevalue.value = totalSeconds;
         callUIInteraction({
             FunctionNamename: '虚拟仿真时间模拟',
-            Time:timevalue.value
+            Time: timevalue.value
         });
         intervalId = setInterval(() => {
             timevalue.value++;
@@ -173,7 +174,10 @@ const weatherIcons = {
     [rainstormday]: '暴雨',
     [Lightfogday]: '小雾',
     [Mediumfogday]: '中雾',
-    [Fogday]: '大雾'
+    [Fogday]: '大雾',
+    [lightsnow]: '小雪',
+    [moderatesnow]: '中雪',
+    [heavysnow]: '大雪'
 };
 
 const weatherone = ref(sunnyday);
@@ -201,6 +205,9 @@ const selectDetailIcon = (icon) => {
             break;
         case 'fogDetail':
             selectedWeatherIcon = weatherIcons[weatherthree.value];
+            break;
+        case 'snowDetail':
+            selectedWeatherIcon = weatherIcons[weatherone.value];
             break;
         default:
             break;
@@ -243,6 +250,16 @@ const updateWeatherDetails = (icon) => {
                 Weather:'大雾'
             });
             break;
+        case 'snow':
+            weatherone.value = lightsnow;
+            weathertwo.value = moderatesnow;
+            weatherthree.value = heavysnow;
+            selectedIconDetail.value = 'sunnyDetail';
+            callUIInteraction({
+                FunctionNamename: '选中的天气详情图标',
+                Weather:'小雪'
+            });
+            break;
         default:
             break;
     }
@@ -256,7 +273,7 @@ const addtime = () => {
     sessionStorage.setItem('timevalue', timevalue.value);
     callUIInteraction({
         FunctionName: '虚拟仿真时间模拟',
-        Time:timevalue.value
+        Time: timevalue.value
     });
 };
 // 时间模拟时间轴减少
@@ -265,7 +282,7 @@ const decreasetime = () => {
     sessionStorage.setItem('timevalue', timevalue.value);
     callUIInteraction({
         FunctionName: '虚拟仿真时间模拟',
-        Time:timevalue.value
+        Time: timevalue.value
     });
 };
 // 风强度增加
@@ -274,7 +291,7 @@ const addintensity = () => {
     sessionStorage.setItem('Windintensity', Windintensity.value);
     callUIInteraction({
         FunctionName: '虚拟仿真风强度',
-        FQD:Windintensity.value
+        FQD: Windintensity.value
     });
 };
 // 风强度减少
@@ -283,7 +300,7 @@ const decreaseintensity = () => {
     sessionStorage.setItem('Windintensity', Windintensity.value);
     callUIInteraction({
         FunctionName: '虚拟仿真风强度',
-        FQD:Windintensity.value
+        FQD: Windintensity.value
     });
 };
 // 风向增加
@@ -292,7 +309,7 @@ const adddirection = () => {
     sessionStorage.setItem('Winddirection', Winddirection.value);
     callUIInteraction({
         FunctionName: '虚拟仿真风向',
-        FX:Winddirection.value
+        FX: Winddirection.value
     });
 };
 // 风向增加
@@ -301,7 +318,7 @@ const decreasedirection = () => {
     sessionStorage.setItem('Winddirection', Winddirection.value);
     callUIInteraction({
         FunctionName: '虚拟仿真风向',
-        FX:Winddirection.value
+        FX: Winddirection.value
     });
 };
 // 监听最后拖动的风强度
@@ -309,7 +326,7 @@ const getWindintensity = (e) => {
     sessionStorage.setItem('Windintensity', e);
     callUIInteraction({
         FunctionName: '虚拟仿真风强度',
-        FQD:e
+        FQD: e
     });
 };
 // 监听最后拖动的风向
@@ -317,7 +334,7 @@ const getWinddirection = (e) => {
     sessionStorage.setItem('Winddirection', e);
     callUIInteraction({
         FunctionName: '虚拟仿真风向',
-        FQD:e
+        FQD: e
     });
 };
 // 监听最后拖动的时间模拟
@@ -325,7 +342,7 @@ const gettimevalue = (e) => {
     sessionStorage.setItem('timevalue', e);
     callUIInteraction({
         FunctionName: '虚拟仿真时间模拟',
-        Time:e
+        Time: e
     });
 };
 
@@ -343,19 +360,21 @@ onMounted(() => {
         const iconPath = selectedIconDetail.value === 'sunnyDetail' ? weatherone.value
             : selectedIconDetail.value === 'heavyrainDetail' ? weathertwo.value
                 : selectedIconDetail.value === 'fogDetail' ? weatherthree.value
-                    : '';
+                    : selectedIconDetail.value === 'snowDetail' ? weatherone.value
+                        : '';
 
         if (iconPath && weatherIcons[iconPath]) {
             callUIInteraction({
                 FunctionName: '选中的天气详情图标',
-                Weather:weatherIcons[iconPath]
+                Weather: weatherIcons[iconPath]
             });
         }
     } else {
         const iconPath = selectedIconDetail.value === 'sunnyDetail' ? weatherone.value
             : selectedIconDetail.value === 'heavyrainDetail' ? weathertwo.value
                 : selectedIconDetail.value === 'fogDetail' ? weatherthree.value
-                    : '';
+                    : selectedIconDetail.value === 'snowDetail' ? weatherone.value
+                        : '';
         if (iconPath && weatherIcons[iconPath]) {
             callUIInteraction({
                 FunctionName: '选中的天气详情图标',

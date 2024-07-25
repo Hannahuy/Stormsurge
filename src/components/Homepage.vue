@@ -147,12 +147,12 @@ const setActiveButton = (button) => {
     lastActiveButton.value = activeButton.value
     activeButton.value = button
     callUIInteraction({
-      FunctionName: `${button}`,
-      State: true,
-    });
-    callUIInteraction({
       FunctionName: `${lastActiveButton.value}`,
       State: false,
+    });
+    callUIInteraction({
+      FunctionName: `${button}`,
+      State: true,
     });
   }
 }

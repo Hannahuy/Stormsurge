@@ -5,8 +5,7 @@
                 <span>减灾措施情景库</span>
             </div>
             <div class="oneBox">
-                <el-checkbox-group v-model="checkListone" class="checkboxone"
-                    @change="handleCheckChange('checkListone')">
+                <el-checkbox-group v-model="checkListone" class="checkboxone" @change="handleCheckChange('checkListone')">
                     <el-checkbox label="无减灾设施" value="无减灾设施" />
                     <el-checkbox label="加防潮堤" value="加防潮堤" />
                     <el-checkbox label="加防汛沙袋" value="加防汛沙袋" />
@@ -18,57 +17,82 @@
                 <span>水位情景库</span>
             </div>
             <div class="twoBox">
-                <div style="margin-top: 20px;">
-                    <span class="twoBox-title">预设水位</span>
-                    <el-checkbox-group v-model="checkListtwo" class="checkboxtwo"
-                        @change="handleCheckChange('checkListtwo')">
+                <el-checkbox-group v-model="checkListtwo" class="checkboxtwo" @change="handleCheckChange('checkListtwo')">
+                    <div class="checkbox-column">
                         <el-checkbox label="0米" value="0m" />
                         <el-checkbox label="1米" value="1m" />
                         <el-checkbox label="2米" value="2m" />
+                    </div>
+                    <div class="checkbox-column">
                         <el-checkbox label="3米" value="3m" />
                         <el-checkbox label="4米" value="4m" />
-                    </el-checkbox-group>
-                </div>
+                        <el-checkbox label="5米" value="5m" />
+                    </div>
+                </el-checkbox-group>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { callUIInteraction, addResponseEventListener, } from "../../module/webrtcVideo/webrtcVideo.js";
+import { ref, watch, onMounted, nextTick } from 'vue';
+import { callUIInteraction } from "../../module/webrtcVideo/webrtcVideo.js";
 
 const checkListone = ref([]);
-const checkListtwo = ref([]);
+const checkListtwo = ref(['0m']);
 
-const handleCheckChange = (listName) => {
-    const list = eval(listName);
-    // 映射列表名称到描述
-    const descriptions = {
-        checkListone: '减灾措施情景库',
-        checkListtwo: '水位浪高情景库预设水位',
-    };
-    // 检查数组长度并打印当前选中的值
-    if (list.value.length > 0) {
+const descriptions = {
+    checkListone: '减灾措施情景库',
+    checkListtwo: '水位情景库',
+};
+
+onMounted(() => {
+    callUIInteraction({
+        FunctionName: `${descriptions['checkListtwo']}`,
+        State: '0m'
+    });
+});
+
+watch(checkListone, (newValue, oldValue) => {
+    const added = newValue.filter(item => !oldValue.includes(item));
+    const removed = oldValue.filter(item => !newValue.includes(item));
+
+    if (removed.length) {
+        console.log(`${descriptions['checkListone']}${removed}`);
         callUIInteraction({
-            FunctionName: `${descriptions[listName]}` + list.value[list.value.length - 1],
-            State: true
-        });
-    } else {
-        callUIInteraction({
-            FunctionName: `${descriptions[listName]}`,
+            FunctionName: `${descriptions['checkListone']}${removed}`,
             State: false
         });
     }
+
+    if (added.length) {
+        setTimeout(() => {
+            console.log(`${descriptions['checkListone']}${added[added.length - 1]}`);
+            callUIInteraction({
+                FunctionName: `${descriptions['checkListone']}${added[added.length - 1]}`,
+                State: true
+            });
+        }, 0);
+    }
+});
+
+watch(checkListtwo, (newValue, oldValue) => {
+    const added = newValue.filter(item => !oldValue.includes(item));
+    if (added.length) {
+        callUIInteraction({
+            FunctionName: `${descriptions['checkListtwo']}`,
+            State: `${added[added.length - 1]}`
+        });
+    }
+});
+
+const handleCheckChange = (listName) => {
+    const list = listName === 'checkListone' ? checkListone : checkListtwo;
     // 如果选中多个，保留最后一个
     if (list.value.length > 1) {
         list.value = [list.value[list.value.length - 1]];
     }
 };
-
-onMounted(() => {
-
-});
 </script>
 
 <style scoped>
@@ -77,7 +101,7 @@ onMounted(() => {
     top: 12%;
     left: 20px;
     width: 440px;
-    height: 420px;
+    height: 455px;
     padding: 20px;
     box-sizing: border-box;
     background-image: url('../../assets/img/框.png');
@@ -148,20 +172,17 @@ onMounted(() => {
     height: 180px;
 }
 
-.twoBox-title {
-    font-size: 20px;
-    color: #D4E1FF;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .checkboxtwo {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 10px;
+}
+
+.checkbox-column {
+    display: flex;
+    flex-direction: column;
+    margin: 0 10px;
 }
 
 .twoBox:deep(.el-checkbox) {
