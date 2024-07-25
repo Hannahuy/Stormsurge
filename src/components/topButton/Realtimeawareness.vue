@@ -380,6 +380,10 @@ const Waveheightinit = () => {
 onMounted(() => {
     Tideinit();
     Waveheightinit();
+    callUIInteraction({
+        FunctionName: `实时感知时间轴`,
+        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+    });
 })
 onBeforeUnmount(() => {
     if (TideEchartsdata) {

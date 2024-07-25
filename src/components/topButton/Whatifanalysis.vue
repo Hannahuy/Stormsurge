@@ -35,11 +35,12 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, nextTick } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { callUIInteraction } from "../../module/webrtcVideo/webrtcVideo.js";
 
 const checkListone = ref([]);
 const checkListtwo = ref(['0m']);
+let lastSelected = ref('0m'); // 用于跟踪上一个选中的选项
 
 const descriptions = {
     checkListone: '减灾措施情景库',
@@ -49,7 +50,7 @@ const descriptions = {
 onMounted(() => {
     callUIInteraction({
         FunctionName: `${descriptions['checkListtwo']}`,
-        State: '0m'
+        State: '0'
     });
 });
 
@@ -58,7 +59,6 @@ watch(checkListone, (newValue, oldValue) => {
     const removed = oldValue.filter(item => !newValue.includes(item));
 
     if (removed.length) {
-        console.log(`${descriptions['checkListone']}${removed}`);
         callUIInteraction({
             FunctionName: `${descriptions['checkListone']}${removed}`,
             State: false
@@ -67,7 +67,6 @@ watch(checkListone, (newValue, oldValue) => {
 
     if (added.length) {
         setTimeout(() => {
-            console.log(`${descriptions['checkListone']}${added[added.length - 1]}`);
             callUIInteraction({
                 FunctionName: `${descriptions['checkListone']}${added[added.length - 1]}`,
                 State: true
@@ -79,21 +78,39 @@ watch(checkListone, (newValue, oldValue) => {
 watch(checkListtwo, (newValue, oldValue) => {
     const added = newValue.filter(item => !oldValue.includes(item));
     if (added.length) {
+        const numericValue = parseInt(added[added.length - 1]);
         callUIInteraction({
             FunctionName: `${descriptions['checkListtwo']}`,
-            State: `${added[added.length - 1]}`
+            State: numericValue
         });
+        console.log(numericValue);
     }
 });
 
 const handleCheckChange = (listName) => {
     const list = listName === 'checkListone' ? checkListone : checkListtwo;
-    // 如果选中多个，保留最后一个
-    if (list.value.length > 1) {
-        list.value = [list.value[list.value.length - 1]];
+
+    // 如果是 checkListtwo，确保只能选择一个
+    if (listName === 'checkListtwo') {
+        if (list.value.length > 1) {
+            list.value = [list.value[list.value.length - 1]]; // 保留最后一个选项
+        }
+
+        // 如果当前选项被取消，恢复到上一个选项
+        if (list.value.length === 0) {
+            list.value = [lastSelected.value]; // 恢复到上一个选项
+        } else {
+            lastSelected.value = list.value[0]; // 更新上一个选项
+        }
+    } else {
+        // 如果选中多个，保留最后一个
+        if (list.value.length > 1) {
+            list.value = [list.value[list.value.length - 1]];
+        }
     }
 };
 </script>
+
 
 <style scoped>
 .left-menu {

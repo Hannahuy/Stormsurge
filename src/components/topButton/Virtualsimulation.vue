@@ -116,7 +116,7 @@ import heavysnow from '../../assets/img/heavysnow.png';
 
 const currentTime = ref('');
 const currentDate = ref('');
-const timevalue = ref(sessionStorage.getItem('timevalue') ? parseInt(sessionStorage.getItem('timevalue')) : 1);
+const timevalue = ref(sessionStorage.getItem('timevalue') ? parseInt(sessionStorage.getItem('timevalue')) : 34200);
 const Windintensity = ref(sessionStorage.getItem('Windintensity') ? parseInt(sessionStorage.getItem('Windintensity')) : 0);
 const Winddirection = ref(sessionStorage.getItem('Winddirection') ? parseInt(sessionStorage.getItem('Winddirection')) : 0);
 // 时间模拟时间轴
@@ -145,7 +145,7 @@ const swtichvalue = ref(false);
 let intervalId;
 const handleswtich = (e) => {
     callUIInteraction({
-        FunctionNamename: '是否实时',
+        FunctionName: '是否实时',
         State: e
     });
     if (e) {
@@ -153,7 +153,7 @@ const handleswtich = (e) => {
         const totalSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
         timevalue.value = totalSeconds;
         callUIInteraction({
-            FunctionNamename: '虚拟仿真时间模拟',
+            FunctionName: '虚拟仿真时间模拟',
             Time: timevalue.value
         });
         intervalId = setInterval(() => {
@@ -213,7 +213,7 @@ const selectDetailIcon = (icon) => {
             break;
     }
     callUIInteraction({
-        FunctionNamename: '选中的天气详情图标',
+        FunctionName: '选中的天气详情图标',
         Weather:selectedWeatherIcon
     });
 };
@@ -226,7 +226,7 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = cloudyday;
             selectedIconDetail.value = 'sunnyDetail';
             callUIInteraction({
-                FunctionNamename: '选中的天气详情图标',
+                FunctionName: '选中的天气详情图标',
                 Weather:'晴天'
             });
             break;
@@ -236,7 +236,7 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = rainstormday;
             selectedIconDetail.value = 'heavyrainDetail';
             callUIInteraction({
-                FunctionNamename: '选中的天气详情图标',
+                FunctionName: '选中的天气详情图标',
                 Weather:'中雨'
             });
             break;
@@ -246,7 +246,7 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = Fogday;
             selectedIconDetail.value = 'fogDetail';
             callUIInteraction({
-                FunctionNamename: '选中的天气详情图标',
+                FunctionName: '选中的天气详情图标',
                 Weather:'大雾'
             });
             break;
@@ -256,7 +256,7 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = heavysnow;
             selectedIconDetail.value = 'sunnyDetail';
             callUIInteraction({
-                FunctionNamename: '选中的天气详情图标',
+                FunctionName: '选中的天气详情图标',
                 Weather:'小雪'
             });
             break;

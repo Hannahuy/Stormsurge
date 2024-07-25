@@ -84,54 +84,65 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 import dayjs from "dayjs";
-import { callUIInteraction, addResponseEventListener, } from "../../module/webrtcVideo/webrtcVideo.js";
+import { callUIInteraction } from "../../module/webrtcVideo/webrtcVideo.js";
 import tabledataJson from "/public/data/实时监测.json";
 import { ElMessage } from 'element-plus';
 
 const tableData = ref([]);
-// 获取表格数据
 const gettable = () => {
     tableData.value = tabledataJson;
 };
 
-const activeButton = ref(null);
+const activeButton = ref('wave'); // 默认选择海浪预测
+
+const timePick = ref(dayjs("2024-03-21").toDate());
+const timePlay = ref(dayjs("2024-03-21 12:00").valueOf()); // 默认设置为 2024-03-21 12:00
+
+const disabledDate = () => false;
+
 const toggleBackground = (button) => {
     if (activeButton.value === button) {
-        activeButton.value = null; // 如果当前按钮已激活，则重置
+        activeButton.value = null;
     } else {
-        activeButton.value = button; // 否则设置为当前按钮
+        activeButton.value = button;
+        const name = button === 'wave' ? '海浪预测' : '潮位预测';
+
+        if (button === 'wave') {
+            timePick.value = dayjs("2024-03-21").toDate();
+            timePlay.value = dayjs("2024-03-21 12:00").valueOf();
+        } else if (button === 'tide') {
+            timePick.value = dayjs("2024-06-06").toDate();
+            timePlay.value = dayjs("2024-06-06 20:00").valueOf();
+        }
+
+        // Update min and max based on the selected date
+        min.value = dayjs(timePick.value).startOf("day").valueOf();
+        max.value = dayjs(timePick.value).endOf("day").valueOf();
+
+        callUIInteraction({
+            FunctionName: name,
+            Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+        });
     }
 };
 
-const timePick = ref(dayjs("2023-11-16").toDate());
-const timePlay = ref(dayjs("2023-11-16 10:00").valueOf()); // 默认设置为 2023-11-16 10:00
-
-const disabledDate = (time) => {
-    const year = time.getFullYear();
-    const month = time.getMonth();
-    const date = time.getDate();
-
-    // 只允许选择2023年3月10日和2023年11月16日到2023年11月21日
-    if (
-        (year === 2023 && month === 2 && date === 10) || // 2023年3月10日
-        (year === 2023 && month === 10 && date >= 16 && date <= 21) // 2023年11月16日到2023年11月21日
-    ) {
-        return false; // 可以选择
-    } else {
-        return true; // 不可选择
-    }
-};
 const activePlay = ref("");
 const isDisabled = ref(false);
+
+const predictionType = computed(() => {
+    return activeButton.value === 'wave' ? '海浪预测时间轴' : '潮位预测时间轴';
+});
+
 // 倒退
 const Backoff = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).subtract(1, 'hour').valueOf();
     callUIInteraction({
-        FunctionName: `模拟预测时间轴`,
-        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+        FunctionName: predictionType.value,
+        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
+
 // 暂停/播放
 let previousPlayState = "";
 let intervalTime = null;
@@ -151,18 +162,19 @@ const togglePlay = () => {
         clearInterval(playInterval);
     }
 };
+
 // 前进
 const Fastforward = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).add(1, 'hour').valueOf();
     callUIInteraction({
-        FunctionName: `模拟预测时间轴`,
-        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+        FunctionName: predictionType.value,
+        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
 
 const min = ref(dayjs(timePick.value).startOf("day").valueOf());
-const max = ref(dayjs(timePick.value).add(5, 'days').endOf("day").valueOf());
+const max = ref(dayjs(timePick.value).endOf("day").valueOf());
 
 const formattedTime = computed(() => {
     const time = dayjs(timePlay.value);
@@ -195,43 +207,41 @@ const adjustedStyle = computed(() => {
     }
     return baseStyle;
 });
+
 // 定义 slider 的刻度
 const marks = computed(() => {
     const marks = {};
     const start = dayjs(min.value);
-    for (let i = 0; i <= 5; i++) {
-        const markTime = start.add(i, 'day').startOf('day');
+    for (let i = 0; i <= 24; i++) {
+        const markTime = start.add(i, 'hour');
         marks[markTime.valueOf()] = {
             style: {
                 color: '#ffffff'
             },
-            label: markTime.format('YYYY-MM-DD')
+            label: markTime.format('HH:mm')
         };
     }
     return marks;
 });
+
 watch(timePick, (newVal) => {
     const selectedDate = dayjs(newVal);
-    if (selectedDate.isSame(dayjs("2023-11-16"), 'day')) {
-        timePlay.value = dayjs("2023-11-16 10:00").valueOf(); // 设置为 2023-11-16 10:00
-    } else {
-        timePlay.value = selectedDate.startOf("day").valueOf(); // 设置为选择日期的 00:00
-    }
     min.value = selectedDate.startOf("day").valueOf();
-    max.value = selectedDate.add(5, 'days').endOf("day").valueOf(); // 保持进度条为5天的进度
+    max.value = selectedDate.endOf("day").valueOf(); // Adjust to 1-day range
 });
 watch(timePlay, (newVal) => {
     const currentTime = dayjs(newVal);
     if (currentTime.minute() === 0 && currentTime.second() === 0) {
         callUIInteraction({
-            FunctionName: `模拟预测时间轴/`,
-            Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+            FunctionName: predictionType.value,
+            Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
         });
     }
     if (currentTime.isSame(dayjs(max.value))) {
         activePlay.value = '';
     }
 });
+
 // 监听时间轴
 const gettimePlay = (e) => {
     const clickedTime = dayjs(e).second(0).format("YYYY-MM-DD HH:mm:ss");
@@ -240,10 +250,11 @@ const gettimePlay = (e) => {
         activePlay.value = "";
     }
     callUIInteraction({
-        FunctionName: `模拟预测时间轴`,
-        Time:dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+        FunctionName: predictionType.value,
+        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
 };
+
 const showbar = computed(() => {
     return activeButton.value === "wave";
 });
@@ -253,11 +264,19 @@ const shownextbar = computed(() => {
 
 onMounted(() => {
     gettable()
+    callUIInteraction({
+        FunctionName: `海浪预测`,
+    });
+    callUIInteraction({
+        FunctionName: `海浪预测时间轴`,
+        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+    });
 })
 onBeforeUnmount(() => {
 
 });
 </script>
+
 
 <style scoped>
 .leftbox-top {

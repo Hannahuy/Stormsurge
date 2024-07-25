@@ -23,7 +23,7 @@ div {
   -ms-user-select: none;
 }
 .el-picker__popper.el-popper {
-  inset: 25.521vw auto auto 15px !important;
+  inset: 475px auto auto 15px !important;
 }
 .el-popper__arrow::before {
   display: none;
