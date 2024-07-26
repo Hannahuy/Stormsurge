@@ -54,9 +54,9 @@
     <div v-show="showbar" class="sidebar">
         <div class="bar">
             <div class="color-bar-number">
-                <span>18(mg/L)</span>
-                <span>9(mg/L)</span>
-                <span>0(mg/L)</span>
+                <span>3(m)</span>
+                <span>1.5(m)</span>
+                <span>0(m)</span>
             </div>
             <div class="color-bar"></div>
         </div>
@@ -64,9 +64,9 @@
     <div class="sidebar" v-show="shownextbar">
         <div class="nextbar">
             <div class="color-nextbar-number">
-                <span>41.5(mg/L)</span>
-                <span>20(mg/L)</span>
-                <span>0(mg/L)</span>
+                <span>3(m)</span>
+                <span>1(m)</span>
+                <span>-2(m)</span>
             </div>
             <div class="color-nextbar"></div>
         </div>
@@ -508,7 +508,7 @@ onBeforeUnmount(() => {
     background-image: url("../../assets/img/框-bg.png");
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    width: 95px;
+    width: 70px;
     height: 200px;
     display: flex;
     align-items: center;
@@ -523,7 +523,13 @@ onBeforeUnmount(() => {
 .color-bar {
     width: 10px;
     height: 176px;
-    background: linear-gradient(180deg, #ff0000 0%, #ffdb00 33%, #c4ff00 66%, #3aaa00 100%);
+    background: linear-gradient(180deg,
+            #ff0000 5%,
+            #ff8800 20%,
+            #ffdb00 35%,
+            #0cd112 50%,
+            #0dc1ce 70%,
+            #2323f5 95%);
     border-radius: 9px;
 }
 
