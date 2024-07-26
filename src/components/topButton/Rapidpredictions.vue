@@ -7,36 +7,29 @@
             潮位预测
         </div>
     </div>
-    <div class="leftbox-bottom" v-show="activeButton === 'wave'">
+    <div v-if="showBottom" class="leftbox-bottom">
         <div class="leftbox-top-title">
-            <span>海浪预测</span>
+            <span>{{ activeButton === 'wave' ? '海浪预测' : '潮位预测' }}</span>
         </div>
         <div id="WaveheightEcharts">
-            <el-table :data="tableData" style="width: 100%; margin-top: 10px" :header-cell-style="{
-            background: 'transparent',
-            fontSize: '15px',
-            'text-align': 'center',
-        }" height="220">
-                <el-table-column prop="Updated" label="时间" align="center" width="" />
-                <el-table-column prop="waterlevel" label="水位" align="center" width="" />
-                <el-table-column prop="Waveheight" label="波高" align="center" width="" />
-            </el-table>
-        </div>
-    </div>
-    <div class="leftbox-bottom" v-show="activeButton === 'tide'">
-        <div class="leftbox-top-title">
-            <span>潮位预测</span>
-        </div>
-        <div id="WaveheightEcharts">
-            <el-table :data="tableData" style="width: 100%; margin-top: 10px" :header-cell-style="{
-            background: 'transparent',
-            fontSize: '15px',
-            'text-align': 'center',
-        }" height="220">
-                <el-table-column prop="Updated" label="时间" align="center" width="" />
-                <el-table-column prop="waterlevel" label="水位" align="center" width="" />
-                <el-table-column prop="Waveheight" label="波高" align="center" width="" />
-            </el-table>
+            <table class="custom-table">
+                <tr>
+                    <td>时间</td>
+                    <td>{{ Datatime }}</td>
+                </tr>
+                <tr>
+                    <td>经度</td>
+                    <td>{{ Lon }}°E</td>
+                </tr>
+                <tr>
+                    <td>纬度</td>
+                    <td>{{ Lat }}°N</td>
+                </tr>
+                <tr v-for="(item, index) in Data" :key="index">
+                    <td>{{ item.Name }}</td>
+                    <td>{{ item.Value }}</td>
+                </tr>
+            </table>
         </div>
     </div>
     <div class="bottomCalendar">
@@ -53,7 +46,7 @@
             <div :style="adjustedStyle">
                 <span class="bottombox-slider-span">{{ formattedTime }}</span>
             </div>
-            <el-slider :step="30" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
+            <el-slider :step="3600 * 1000" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
                 style="position: relative; z-index: 1; width: 1600px" @change="gettimePlay">
             </el-slider>
         </div>
@@ -85,14 +78,13 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 import dayjs from "dayjs";
 import { callUIInteraction, addResponseEventListener } from "../../module/webrtcVideo/webrtcVideo.js";
-import tabledataJson from "/public/data/实时监测.json";
 import { ElMessage } from 'element-plus';
 
-const tableData = ref([]);
-const gettable = () => {
-    tableData.value = tabledataJson;
-};
-
+const Datatime = ref();
+const Lon = ref();
+const Lat = ref();
+const Data = ref([]);
+const showBottom = ref(false);
 const activeButton = ref('wave'); // 默认选择海浪预测
 
 const timePick = ref(dayjs("2024-03-21").toDate());
@@ -107,6 +99,7 @@ const toggleBackground = (button) => {
         activeButton.value = button;
         const name = button === 'wave' ? '海浪预测' : '潮位预测';
 
+        showBottom.value = false; // 切换时隐藏
         if (button === 'wave') {
             timePick.value = dayjs("2024-03-21").toDate();
             timePlay.value = dayjs("2024-03-21 12:00").valueOf();
@@ -271,12 +264,15 @@ const shownextbar = computed(() => {
 });
 
 const myHandleResponseFunction = (data) => {
-  const datajson = JSON.parse(data);
-  console.log(datajson);
+    const datajson = JSON.parse(data);
+    Datatime.value = datajson.Datatime;
+    Lon.value = datajson.Lon;
+    Lat.value = datajson.Lat;
+    Data.value = datajson.Data;
+    showBottom.value = true;
 }
 
 onMounted(() => {
-    gettable()
     callUIInteraction({
         FunctionName: `海浪预测`,
     });
@@ -642,5 +638,21 @@ onBeforeUnmount(() => {
 :deep(.el-slider__stop) {
     background-color: #fff;
     width: 2px;
+}
+
+.custom-table {
+    border-collapse: collapse;
+    width: 100%;
+    color: #b7cffc;
+    margin-top: 10px;
+}
+
+.custom-table th,
+.custom-table td {
+    border: 1px solid #416491;
+    padding: 8px;
+    text-align: center;
+    height: 38px;
+    width: 50%;
 }
 </style>

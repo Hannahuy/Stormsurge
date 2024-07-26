@@ -13,7 +13,7 @@
         </div>
         <div class="leftbox-top">
             <div class="leftbox-top-title">
-                <span>潮位变化</span>
+                <span>水位变化</span>
             </div>
             <div id="TideEcharts"></div>
         </div>
