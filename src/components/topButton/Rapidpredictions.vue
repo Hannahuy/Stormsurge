@@ -46,7 +46,7 @@
             <div :style="adjustedStyle">
                 <span class="bottombox-slider-span">{{ formattedTime }}</span>
             </div>
-            <el-slider :step="3600 * 1000" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
+            <el-slider :step="30" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
                 style="position: relative; z-index: 1; width: 1600px" @change="gettimePlay">
             </el-slider>
         </div>
@@ -264,12 +264,21 @@ const shownextbar = computed(() => {
 });
 
 const myHandleResponseFunction = (data) => {
+    console.log(data);
     const datajson = JSON.parse(data);
-    Datatime.value = datajson.Datatime;
-    Lon.value = datajson.Lon;
-    Lat.value = datajson.Lat;
-    Data.value = datajson.Data;
-    showBottom.value = true;
+    if (datajson.Function === '报错') {
+        ElMessage({
+            message: datajson.Type,
+            type: 'warning',
+        });
+        return
+    } else {
+        Datatime.value = datajson.DataTime;
+        Lon.value = datajson.Lon;
+        Lat.value = datajson.Lat;
+        Data.value = datajson.Data;
+        showBottom.value = true;
+    }
 }
 
 onMounted(() => {
