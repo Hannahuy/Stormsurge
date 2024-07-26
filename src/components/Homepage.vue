@@ -303,8 +303,8 @@ const Tideinit = () => {
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: '#ff7c7c' }, // 渐变起始颜色
-              { offset: 1, color: '#ff4f4f' }  // 渐变结束颜色
+              { offset: 0, color: '#ffcc80' }, // 渐变起始颜色（浅橙色）
+              { offset: 1, color: '#ff5722' }  // 渐变结束颜色（深橙色）
             ],
             global: false // 默认值为 false
           }
@@ -366,7 +366,7 @@ const Tideinits = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: randomData, // 使用随机生成的数据
+        data: [2.20, 1.82, 1.91, 2.34, 2.90, 3.30, 3.10, 1.23, 4.42, 3.21, 0.90, 1.49, 2.10, 1.22, 1.33, 3.34, 1.98, 1.23, 1.25, 2.20, 3.10, 2.34, 2.01, 1.92, 1.88, 1.78, 1.65, 1.53, 1.44, 1.32],
         stack: "Total",
         smooth: true,
         lineStyle: { width: 0 },
@@ -398,58 +398,94 @@ const Tideinitss = () => {
 
   const options = {
     tooltip: {
-      trigger: 'axis',
+      trigger: 'axis'
+    },
+    grid: {
+      left: '9%',
+      top: '20%',
+      right: '22%',
+      bottom: '18%'
     },
     xAxis: {
-      data: timeLabels, // 使用生成的时间标签
+      type: 'category',
       axisLabel: {
-        show: true,
-        textStyle: {
-          color: "#b7cffc",
-          fontSize: 14,
-        },
+        // rotate: 30,    // 旋转角度，这里设置为45度
+        fontSize: 14,  // 这里可以根据需要调整字体大小
+        // interval: 0,
+        color: '#b7cffc'
       },
+      data: timeLabels
     },
     yAxis: {
-      name: '波高 (m)', // 添加单位
+      type: 'value',
+      name: '波高(m)',
       nameTextStyle: {
-        color: "#b7cffc",
-        fontSize: 14
-      },
-      axisLine: {
-        show: false
-      },
-      axisLabel: {
-        show: true,
-        textStyle: {
-          color: "#b7cffc",
-          fontSize: 14
-        }
+        color: '#b7cffc',
+        fontFamily: 'FZLTHK--GBK1-0',
+        fontSize: '14'
       },
       splitLine: {
-        show: false
+        show: false // 不显示网格线
+      },
+      axisLabel: {
+        rotate: 0,    // 旋转角度，这里设置为45度
+        fontSize: 14,  // 这里可以根据需要调整字体大小
+        color: '#b7cffc'
+      },
+    },
+    visualMap: {
+      top: 'middle',    // 将位置设置为中间，也可以用百分比或具体数值调整位置
+      right: 10,
+      align: 'left',   // 确保与右侧对齐
+      itemWidth: 10,    // 调整色带的宽度
+      itemHeight: 10,  // 调整色带的高度，较大的高度会增加间隙感
+      textStyle: {
+        color: '#b7cffc',  // 文字颜色
+        fontSize: 12   // 文字大小
+      },
+      pieces: [
+        {
+          gt: 0,
+          lte: 1,
+          color: '#93CE07'
+        },
+        {
+          gt: 1,
+          lte: 2,
+          color: '#FBDB0F'
+        },
+        {
+          gt: 2,
+          lte: 3,
+          color: '#FC7D02'
+        },
+        {
+          gt: 3,
+          lte: 4,
+          color: '#FD0100'
+        },
+        {
+          gt: 4,
+          lte: 5,
+          color: '#AA069F'
+        },
+        {
+          gt: 5,
+          color: '#AC3B2A'
+        }
+      ],
+      outOfRange: {
+        color: '#999'
       }
     },
     series: [
       {
+        name: '波高 m',
         type: 'line',
-        showSymbol: false,
-        name: '波高',
-        data: randomData, // 使用随机生成的数据
-        stack: "Total",
-        smooth: true,
-        lineStyle: { width: 0 },
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 1, color: "#0358c0" },
-            { offset: 0, color: "#28F2E6" },
-          ]),
-        },
-        emphasis: { focus: "series" },
+        smooth: 0.2,
+        data: [0.04, 1.10, 2.50, 3.80, 4.27, 4.54, 4.08, 3.60, 2.50, 2.00, 1.75, 0.090, 1.78, 2.78, 3.78, 4.20, 4.00, 3.00, 2.20, 0.9, 1.12, 1.35, 1.27, 1.18],
       }
-    ],
-    grid: { x: 35, y: 30, x2: 15, y2: 25 },
+    ]
   };
   TideEchartsdatass.setOption(options);
 };
@@ -591,7 +627,11 @@ const Tideinitssss = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: randomData, // 使用随机生成的数据
+        data: [
+          1.20, 2.00, 1.50, 1.80, 1.70, 1.50, 1.30, 1.10,
+          1.52, 2.00, 2.34, 1.90, 1.80, 2.20, 1.76, 1.63,
+          1.37, 1.21, 1.31, 1.43, 1.27, 1.16, 1.05, 1.21
+        ], 
         stack: "Total",
         smooth: true,
         lineStyle: { width: 0 },
