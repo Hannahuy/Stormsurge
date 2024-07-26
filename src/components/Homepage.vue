@@ -202,9 +202,22 @@ const Tideinit = () => {
   }
   TideEchartsdata = echarts.init(salinityChartElement);
 
-  const days = 30; // 未来30天
+  // 未来30天
+  const days = 30;
   const dates = generateDates(days);
-  const randomData = generateRandomDataT(days);
+
+  // 数据
+  const seriesData1 = [
+    2.26, 3.12, 3.37, 2.84, 2.16, 1.85, 1.73, 1.94, 2.07, 2.11,
+    2.04, 1.84, 1.64, 1.55, 1.72, 2.21, 2.48, 2.74, 2.91, 3.31,
+    3.58, 2.79, 2.66, 2.41, 1.79, 2.33, 2.79, 2.07, 1.77, 1.49
+  ];
+
+  const seriesData2 = [
+    -1.35, -0.87, -0.55, -1.32, -1.21, -1.07, -1.48, -1.62, -1.83, -1.49,
+    -1.22, -1.64, -1.65, -1.81, -1.21, -1.05, -1.83, -1.55, -1.29, -1.64,
+    -0.97, -1.23, -1.63, -1.55, -1.87, -2.01, -1.94, -1.67, -1.53, -1.22
+  ];
 
   const options = {
     tooltip: {
@@ -219,22 +232,21 @@ const Tideinit = () => {
       bottom: '3%',
       containLabel: true
     },
-    xAxis: [
-      {
-        type: 'category',
-        data: dates,
-        axisTick: {
-          alignWithLabel: true
+    xAxis: {
+      type: 'category',
+      data: dates,
+      axisTick: {
+        alignWithLabel: true
+      },
+      axisLabel: {
+        show: true,
+        textStyle: {
+          color: "#b7cffc",
+          fontSize: 14,
         },
-        axisLabel: {
-          show: true,
-          textStyle: {
-            color: "#b7cffc",
-            fontSize: 14,
-          },
-        },
-      }
-    ],
+      },
+      splitLine: { show: false },
+    },
     yAxis: {
       name: '水位 (m)', // 添加单位
       nameTextStyle: {
@@ -257,11 +269,11 @@ const Tideinit = () => {
     },
     series: [
       {
-        name: '水位',
+        name: '最大潮位',
         type: 'bar',
-        barWidth: '60%',
+        stack: 'stack1', // 堆叠标识
+        barWidth: '40%', // 设置条形宽度
         itemStyle: {
-          // 使用渐变色
           color: {
             type: 'linear',
             x: 0,
@@ -272,10 +284,32 @@ const Tideinit = () => {
               { offset: 0, color: '#00f2fe' }, // 渐变起始颜色
               { offset: 1, color: '#0088ff' }  // 渐变结束颜色
             ],
-            global: false // 缺省为 false
+            global: false // 默认值为 false
           }
         },
-        data: randomData // 使用随机生成的数据
+        data: seriesData1 // 使用第一个数据系列
+      },
+      {
+        name: '最小潮位',
+        type: 'bar',
+        stack: 'stack1', // 堆叠标识
+        barWidth: '40%', // 设置条形宽度
+        barGap: '0%', // 设置条形之间的间距为0
+        itemStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: '#ff7c7c' }, // 渐变起始颜色
+              { offset: 1, color: '#ff4f4f' }  // 渐变结束颜色
+            ],
+            global: false // 默认值为 false
+          }
+        },
+        data: seriesData2 // 使用第二个数据系列
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
@@ -498,7 +532,9 @@ const Tideinitsss = () => {
             global: false // 缺省为 false
           }
         },
-        data: randomData // 使用随机生成的数据
+        data: [-1.04, -0.67, -0.33, -0.04, 0.17, 0.67, 1.21, 1.47, 1.63, 1.85,
+          1.93, 1.97, 1.72, 1.57, 1.31, 1.08, 0.64, 0.31, 0.13, -0.11,
+        -0.37, -0.69, -0.81, -1.27]
       }
     ],
     grid: { x: 35, y: 30, x2: 15, y2: 25 },
