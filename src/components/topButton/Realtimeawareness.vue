@@ -78,10 +78,6 @@ const isDisabled = ref(false);
 const Backoff = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).subtract(1, 'hour').valueOf();
-    callUIInteraction({
-        FunctionName: `实时感知时间轴`,
-        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-    });
 };
 // 暂停/播放
 let previousPlayState = "";
@@ -106,10 +102,6 @@ const togglePlay = () => {
 const Fastforward = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).add(1, 'hour').valueOf();
-    callUIInteraction({
-        FunctionName: `实时感知时间轴`,
-        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-    });
 };
 
 const min = ref(dayjs(timePick.value).startOf("day").valueOf());
@@ -194,10 +186,6 @@ const gettimePlay = (e) => {
     if (activePlay.value === "play") {
         activePlay.value = "";
     }
-    callUIInteraction({
-        FunctionName: '实时感知时间轴',
-        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-    });
 }
 
 let TideEchartsdata = null;
@@ -368,10 +356,6 @@ const Waveheightinit = () => {
 onMounted(() => {
     Tideinit();
     Waveheightinit();
-    callUIInteraction({
-        FunctionName: `实时感知时间轴`,
-        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-    });
     callUIInteraction({
         FunctionName: `实时感知时间轴`,
         Waterhigh: tabledataJson[0].waterlevel,
