@@ -124,11 +124,20 @@ const isDisabled = ref(false);
 const predictionType = computed(() => {
     return activeButton.value === 'wave' ? '海浪预测时间轴' : '潮位预测时间轴';
 });
-
+const isProgrammaticDateChange = ref(false);
 // 倒退
 const Backoff = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).subtract(1, 'hour').valueOf();
+
+    // 检查是否达到最小值
+    if (timePlay.value < min.value) {
+        isProgrammaticDateChange.value = true;
+        // 跳到前一天
+        timePick.value = dayjs(timePick.value).subtract(1, 'day').toDate();
+        timePlay.value = max.value; // 加满进度条，设置为最大值
+    }
+
     callUIInteraction({
         FunctionName: predictionType.value,
         Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
@@ -159,6 +168,13 @@ const togglePlay = () => {
 const Fastforward = () => {
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).add(1, 'hour').valueOf();
+    // 检查是否达到最大值
+    if (timePlay.value > max.value) {
+        isProgrammaticDateChange.value = true;
+        // 跳到下一天
+        timePick.value = dayjs(timePick.value).add(1, 'day').toDate();
+        timePlay.value = min.value; // 清零进度条
+    }
     callUIInteraction({
         FunctionName: predictionType.value,
         Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
@@ -218,7 +234,10 @@ watch(timePick, (newVal) => {
     min.value = selectedDate.startOf("day").valueOf();
     // 更新 max 为当天23点
     max.value = selectedDate.hour(23).minute(0).second(0).valueOf();
-
+    if (isProgrammaticDateChange.value) {
+        isProgrammaticDateChange.value = false;
+        return;
+    }
     // 根据日期设置时间进度
     if (selectedDate.isSame(dayjs("2024-03-21"), 'day')) {
         timePlay.value = dayjs("2024-03-21 12:00").valueOf();
