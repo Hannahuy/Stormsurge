@@ -29,8 +29,8 @@
     </div>
     <div class="bottombox-button">
         <el-button type="primary" class="bottombox-Backoff" :disabled="isDisabled" @click="Backoff"></el-button>
-        <!-- <el-button type="primary" class="bottombox-play" :class="{ active: activePlay === 'play' }"
-            @click="togglePlay"></el-button> -->
+        <el-button type="primary" class="bottombox-play" :class="{ active: activePlay === 'play' }"
+            @click="togglePlay"></el-button>
         <el-button type="primary" class="bottombox-Fastforward" :disabled="isDisabled" @click="Fastforward"></el-button>
     </div>
     <div class="bottombox">
@@ -84,24 +84,24 @@ const Backoff = () => {
     });
 };
 // 暂停/播放
-// let previousPlayState = "";
-// let intervalTime = null;
-// let playInterval = null;
-// const togglePlay = () => {
-//     intervalTime = 16.6665;
-//     previousPlayState = activePlay.value;
-//     activePlay.value = activePlay.value === "play" ? "" : "play";
-//     if (activePlay.value === "play") {
-//         playInterval = setInterval(() => {
-//             timePlay.value = dayjs(timePlay.value).add(1, "minute").valueOf();
-//             if (activePlay.value !== "play") {
-//                 clearInterval(playInterval);
-//             }
-//         }, intervalTime);
-//     } else {
-//         clearInterval(playInterval);
-//     }
-// };
+let previousPlayState = "";
+let intervalTime = null;
+let playInterval = null;
+const togglePlay = () => {
+    intervalTime = 16.6665;
+    previousPlayState = activePlay.value;
+    activePlay.value = activePlay.value === "play" ? "" : "play";
+    if (activePlay.value === "play") {
+        playInterval = setInterval(() => {
+            timePlay.value = dayjs(timePlay.value).add(1, "minute").valueOf();
+            if (activePlay.value !== "play") {
+                clearInterval(playInterval);
+            }
+        }, intervalTime);
+    } else {
+        clearInterval(playInterval);
+    }
+};
 // 前进
 const Fastforward = () => {
     const previousTime = timePlay.value;
@@ -175,9 +175,11 @@ watch(timePlay, (newVal) => {
         const hour = currentTime.hour(); // 获取当前小时
         if (hour >= 0 && hour < tabledataJson.length) { // 确保小时在数组范围内
             const waterLevel = parseFloat(tabledataJson[hour].waterlevel); // 获取对应的 waterlevel 并转换为浮点型
+            const wavehight = parseFloat(tabledataJson[hour].Waveheight);
             callUIInteraction({
                 FunctionName: '实时感知时间轴',
-                State: waterLevel
+                Waterhigh: waterLevel,
+                Wavehigh: wavehight
             });
         }
     }
@@ -372,7 +374,8 @@ onMounted(() => {
     });
     callUIInteraction({
         FunctionName: `实时感知时间轴`,
-        State: tabledataJson[0].waterlevel
+        Waterhigh: tabledataJson[0].waterlevel,
+        Wavehigh: tabledataJson[0].Waveheight
     });
 })
 onBeforeUnmount(() => {
@@ -536,11 +539,9 @@ onBeforeUnmount(() => {
     background-color: #42aeff;
     background-position: 40% 50%;
     border-radius: 100%;
-    background-size: 50% 50%;
     border: 0;
-    width: 40px;
-    height: 40px;
-    margin-left: 15px;
+    width: 30px;
+    height: 30px;
 }
 
 .bottombox-play {
@@ -572,10 +573,9 @@ onBeforeUnmount(() => {
     background-color: #42aeff;
     background-position: 55% 50%;
     border-radius: 100%;
-    background-size: 50% 50%;
     border: 0;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
 }
 
 .bottombox-timespan {
