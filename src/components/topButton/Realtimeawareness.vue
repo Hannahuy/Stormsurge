@@ -29,8 +29,8 @@
     </div>
     <div class="bottombox-button">
         <el-button type="primary" class="bottombox-Backoff" :disabled="isDisabled" @click="Backoff"></el-button>
-        <el-button type="primary" class="bottombox-play" :class="{ active: activePlay === 'play' }"
-            @click="togglePlay"></el-button>
+        <!-- <el-button type="primary" class="bottombox-play" :class="{ active: activePlay === 'play' }"
+            @click="togglePlay"></el-button> -->
         <el-button type="primary" class="bottombox-Fastforward" :disabled="isDisabled" @click="Fastforward"></el-button>
     </div>
     <div class="bottombox">
@@ -38,7 +38,7 @@
             <div :style="adjustedStyle">
                 <span class="bottombox-slider-span">{{ formattedTime }}</span>
             </div>
-            <el-slider :step="30" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
+            <el-slider :step="3600000" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
                 style="position: relative; z-index: 1; width: 1600px" @change="gettimePlay">
             </el-slider>
         </div>
@@ -69,24 +69,9 @@ const toggleHide = () => {
     })
 };
 
-const timePick = ref(dayjs("2023-11-16").toDate());
-const timePlay = ref(dayjs("2023-11-16 10:00").valueOf()); // 默认设置为 2023-11-16 10:00
-
-const disabledDate = (time) => {
-    const year = time.getFullYear();
-    const month = time.getMonth();
-    const date = time.getDate();
-
-    // 只允许选择2023年3月10日和2023年11月16日到2023年11月21日
-    if (
-        (year === 2023 && month === 2 && date === 10) || // 2023年3月10日
-        (year === 2023 && month === 10 && date >= 16 && date <= 21) // 2023年11月16日到2023年11月21日
-    ) {
-        return false; // 可以选择
-    } else {
-        return true; // 不可选择
-    }
-};
+const timePick = ref(dayjs("2024-06-14").toDate());
+const timePlay = ref(dayjs("2024-06-14 00:00").valueOf()); // 默认设置为 2024-06-14 00:00
+const disabledDate = () => false;
 const activePlay = ref("");
 const isDisabled = ref(false);
 // 倒退
@@ -99,24 +84,24 @@ const Backoff = () => {
     });
 };
 // 暂停/播放
-let previousPlayState = "";
-let intervalTime = null;
-let playInterval = null;
-const togglePlay = () => {
-    intervalTime = 16.6665;
-    previousPlayState = activePlay.value;
-    activePlay.value = activePlay.value === "play" ? "" : "play";
-    if (activePlay.value === "play") {
-        playInterval = setInterval(() => {
-            timePlay.value = dayjs(timePlay.value).add(1, "minute").valueOf();
-            if (activePlay.value !== "play") {
-                clearInterval(playInterval);
-            }
-        }, intervalTime);
-    } else {
-        clearInterval(playInterval);
-    }
-};
+// let previousPlayState = "";
+// let intervalTime = null;
+// let playInterval = null;
+// const togglePlay = () => {
+//     intervalTime = 16.6665;
+//     previousPlayState = activePlay.value;
+//     activePlay.value = activePlay.value === "play" ? "" : "play";
+//     if (activePlay.value === "play") {
+//         playInterval = setInterval(() => {
+//             timePlay.value = dayjs(timePlay.value).add(1, "minute").valueOf();
+//             if (activePlay.value !== "play") {
+//                 clearInterval(playInterval);
+//             }
+//         }, intervalTime);
+//     } else {
+//         clearInterval(playInterval);
+//     }
+// };
 // 前进
 const Fastforward = () => {
     const previousTime = timePlay.value;
@@ -128,15 +113,12 @@ const Fastforward = () => {
 };
 
 const min = ref(dayjs(timePick.value).startOf("day").valueOf());
-const max = ref(dayjs(timePick.value).add(5, 'days').endOf("day").valueOf());
+// 将 max 设置为当天的23点
+const max = ref(dayjs(timePick.value).hour(23).minute(0).second(0).valueOf());
 
 const formattedTime = computed(() => {
     const time = dayjs(timePlay.value);
-    if (time.isSame(dayjs(max.value))) {
-        return dayjs(max.value).add(1, "day").format("YYYY/MM/DD 00:00");
-    } else {
-        return time.format("YYYY/MM/DD HH:mm");
-    }
+    return time.format("YYYY/MM/DD HH:mm");
 });
 
 const style = computed(() => {
@@ -161,55 +143,60 @@ const adjustedStyle = computed(() => {
     }
     return baseStyle;
 });
+
 // 定义 slider 的刻度
 const marks = computed(() => {
     const marks = {};
     const start = dayjs(min.value);
-    for (let i = 0; i <= 5; i++) {
-        const markTime = start.add(i, 'day').startOf('day');
+    for (let i = 0; i <= 23; i++) {
+        const markTime = start.add(i, 'hour');
         marks[markTime.valueOf()] = {
             style: {
                 color: '#ffffff'
             },
-            label: markTime.format('YYYY-MM-DD')
+            label: markTime.format('HH:mm')
         };
     }
     return marks;
 });
 watch(timePick, (newVal) => {
     const selectedDate = dayjs(newVal);
-    if (selectedDate.isSame(dayjs("2023-11-16"), 'day')) {
-        timePlay.value = dayjs("2023-11-16 10:00").valueOf(); // 设置为 2023-11-16 10:00
-    } else {
-        timePlay.value = selectedDate.startOf("day").valueOf(); // 设置为选择日期的 00:00
-    }
     min.value = selectedDate.startOf("day").valueOf();
-    max.value = selectedDate.add(5, 'days').endOf("day").valueOf(); // 保持进度条为5天的进度
+    // 更新 max 为当天23点
+    max.value = selectedDate.hour(23).minute(0).second(0).valueOf();
+    // 根据日期设置时间进度
+    timePlay.value = selectedDate.startOf("day").valueOf();
 });
 watch(timePlay, (newVal) => {
     const currentTime = dayjs(newVal);
+    // 检查当前时间是否为整点
     if (currentTime.minute() === 0 && currentTime.second() === 0) {
-        callUIInteraction({
-            FunctionName: `实时感知时间轴`,
-            Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-        });
+        // 打印对应的 waterlevel 值
+        const hour = currentTime.hour(); // 获取当前小时
+        if (hour >= 0 && hour < tabledataJson.length) { // 确保小时在数组范围内
+            const waterLevel = parseFloat(tabledataJson[hour].waterlevel); // 获取对应的 waterlevel 并转换为浮点型
+            callUIInteraction({
+                FunctionName: '实时感知时间轴',
+                State: waterLevel
+            });
+        }
     }
     if (currentTime.isSame(dayjs(max.value))) {
         activePlay.value = '';
     }
 });
+
 // 监听时间轴
 const gettimePlay = (e) => {
-    const clickedTime = dayjs(e).second(0).format("YYYY-MM-DD HH:mm:ss");
     timePlay.value = dayjs(e).second(0).valueOf(); // 确保秒数为 0
     if (activePlay.value === "play") {
         activePlay.value = "";
     }
     callUIInteraction({
-        FunctionName: `实时感知时间轴`,
+        FunctionName: '实时感知时间轴',
         Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
-};
+}
 
 let TideEchartsdata = null;
 const Tideinit = () => {
@@ -383,6 +370,10 @@ onMounted(() => {
         FunctionName: `实时感知时间轴`,
         Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
+    callUIInteraction({
+        FunctionName: `实时感知时间轴`,
+        State: tabledataJson[0].waterlevel
+    });
 })
 onBeforeUnmount(() => {
     if (TideEchartsdata) {
@@ -543,11 +534,13 @@ onBeforeUnmount(() => {
     background-image: url("../../assets/img/Backoff.png");
     background-repeat: no-repeat;
     background-color: #42aeff;
-    background-position: center;
+    background-position: 40% 50%;
     border-radius: 100%;
+    background-size: 50% 50%;
     border: 0;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
+    margin-left: 15px;
 }
 
 .bottombox-play {
@@ -577,11 +570,12 @@ onBeforeUnmount(() => {
     background-image: url("../../assets/img/Fastforward.png");
     background-repeat: no-repeat;
     background-color: #42aeff;
-    background-position: center;
+    background-position: 55% 50%;
     border-radius: 100%;
+    background-size: 50% 50%;
     border: 0;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
 }
 
 .bottombox-timespan {

@@ -46,7 +46,7 @@
             <div :style="adjustedStyle">
                 <span class="bottombox-slider-span">{{ formattedTime }}</span>
             </div>
-            <el-slider :step="30" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
+            <el-slider :step="3600000" v-model="timePlay" :show-tooltip="false" :min="min" :max="max" :marks="marks"
                 style="position: relative; z-index: 1; width: 1600px" @change="gettimePlay">
             </el-slider>
         </div>
@@ -166,15 +166,12 @@ const Fastforward = () => {
 };
 
 const min = ref(dayjs(timePick.value).startOf("day").valueOf());
-const max = ref(dayjs(timePick.value).endOf("day").valueOf());
+// 将 max 设置为当天的23点
+const max = ref(dayjs(timePick.value).hour(23).minute(0).second(0).valueOf());
 
 const formattedTime = computed(() => {
     const time = dayjs(timePlay.value);
-    if (time.isSame(dayjs(max.value))) {
-        return dayjs(max.value).add(1, "day").format("YYYY/MM/DD 00:00");
-    } else {
-        return time.format("YYYY/MM/DD HH:mm");
-    }
+    return time.format("YYYY/MM/DD HH:mm");
 });
 
 const style = computed(() => {
@@ -204,7 +201,7 @@ const adjustedStyle = computed(() => {
 const marks = computed(() => {
     const marks = {};
     const start = dayjs(min.value);
-    for (let i = 0; i <= 24; i++) {
+    for (let i = 0; i <= 23; i++) {
         const markTime = start.add(i, 'hour');
         marks[markTime.valueOf()] = {
             style: {
@@ -219,7 +216,8 @@ const marks = computed(() => {
 watch(timePick, (newVal) => {
     const selectedDate = dayjs(newVal);
     min.value = selectedDate.startOf("day").valueOf();
-    max.value = selectedDate.endOf("day").valueOf();
+    // 更新 max 为当天23点
+    max.value = selectedDate.hour(23).minute(0).second(0).valueOf();
 
     // 根据日期设置时间进度
     if (selectedDate.isSame(dayjs("2024-03-21"), 'day')) {
@@ -245,7 +243,6 @@ watch(timePlay, (newVal) => {
 
 // 监听时间轴
 const gettimePlay = (e) => {
-    const clickedTime = dayjs(e).second(0).format("YYYY-MM-DD HH:mm:ss");
     timePlay.value = dayjs(e).second(0).valueOf(); // 确保秒数为 0
     if (activePlay.value === "play") {
         activePlay.value = "";
