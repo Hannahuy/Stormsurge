@@ -137,11 +137,6 @@ const Backoff = () => {
         timePick.value = dayjs(timePick.value).subtract(1, 'day').toDate();
         timePlay.value = max.value; // 加满进度条，设置为最大值
     }
-
-    callUIInteraction({
-        FunctionName: predictionType.value,
-        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-    });
 };
 
 // 暂停/播放
@@ -175,10 +170,6 @@ const Fastforward = () => {
         timePick.value = dayjs(timePick.value).add(1, 'day').toDate();
         timePlay.value = min.value; // 清零进度条
     }
-    callUIInteraction({
-        FunctionName: predictionType.value,
-        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-    });
 };
 
 const min = ref(dayjs(timePick.value).startOf("day").valueOf());
