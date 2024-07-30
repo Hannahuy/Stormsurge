@@ -51,28 +51,28 @@
               <img src="../assets/img/风场@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
                 <span>最大潮位：3.0m</span>
-                <span>07-26 11:00</span>
+                <span>{{ currentDate }} 11:00</span>
               </div>
             </div>
             <div class="hleftbox-1-content-1">
               <img src="../assets/img/海温@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
                 <span>最小潮位：0.5m</span>
-                <span>07-26 05:00</span>
+                <span>{{ currentDate }} 05:00</span>
               </div>
             </div>
             <div class="hleftbox-1-content-1">
               <img src="../assets/img/海浪@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
                 <span>最大波高：2.0m</span>
-                <span>07-26 11:00</span>
+                <span>{{ currentDate }} 11:00</span>
               </div>
             </div>
             <div class="hleftbox-1-content-1">
               <img src="../assets/img/流场@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
                 <span>最小波高：0.2m</span>
-                <span>07-26 05:00</span>
+                <span>{{ currentDate }} 05:00</span>
               </div>
             </div>
           </div>
@@ -127,7 +127,10 @@ import * as echarts from "echarts";
 
 const activeButton = ref('')
 const lastActiveButton = ref('')
-
+const currentDate = ref('');
+const current = new Date();
+const options = { month: '2-digit', day: '2-digit' };
+currentDate.value = current.toLocaleDateString('zh-CN', options);
 const setActiveButton = (button) => {
   if (activeButton.value === button) {
     // 如果当前按钮已经被选中，则取消选中
@@ -631,7 +634,7 @@ const Tideinitssss = () => {
           1.20, 2.00, 1.50, 1.80, 1.70, 1.50, 1.30, 1.10,
           1.52, 2.00, 2.34, 1.90, 1.80, 2.20, 1.76, 1.63,
           1.37, 1.21, 1.31, 1.43, 1.27, 1.16, 1.05, 1.21
-        ], 
+        ],
         stack: "Total",
         smooth: true,
         lineStyle: { width: 0 },
