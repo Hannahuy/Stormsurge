@@ -77,7 +77,13 @@ const isDisabled = ref(false);
 // 倒退
 const Backoff = () => {
     const previousTime = timePlay.value;
-    timePlay.value = dayjs(previousTime).subtract(1, 'hour').valueOf();
+    const newTime = dayjs(previousTime).subtract(1, 'hour').valueOf();
+    // 确保 newTime 不小于 min
+    if (newTime >= min.value) {
+        timePlay.value = newTime;
+    } else {
+        timePlay.value = min.value;
+    }
 };
 // 暂停/播放
 let previousPlayState = "";
@@ -101,7 +107,13 @@ const togglePlay = () => {
 // 前进
 const Fastforward = () => {
     const previousTime = timePlay.value;
-    timePlay.value = dayjs(previousTime).add(1, 'hour').valueOf();
+    const newTime = dayjs(previousTime).add(1, 'hour').valueOf();
+    // 确保 newTime 不大于 max
+    if (newTime <= max.value) {
+        timePlay.value = newTime;
+    } else {
+        timePlay.value = max.value;
+    }
 };
 
 const min = ref(dayjs(timePick.value).startOf("day").valueOf());

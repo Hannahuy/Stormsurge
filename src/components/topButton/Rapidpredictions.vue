@@ -262,7 +262,6 @@ watch(timePlay, (newVal) => {
                 FunctionName: predictionType.value,
                 Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
             });
-            console.log(dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'));
         }
     }
     if (currentTime.isSame(dayjs(max.value))) {
@@ -276,10 +275,6 @@ const gettimePlay = (e) => {
     if (activePlay.value === "play") {
         activePlay.value = "";
     }
-    callUIInteraction({
-        FunctionName: predictionType.value,
-        Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-    });
 };
 
 const showbar = computed(() => {
