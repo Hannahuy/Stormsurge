@@ -125,18 +125,26 @@ const predictionType = computed(() => {
     return activeButton.value === 'wave' ? '海浪预测时间轴' : '潮位预测时间轴';
 });
 const isProgrammaticDateChange = ref(false);
+
+const isAdjustingTime = ref(false);
+const isJumpingDay = ref(false);
+
 // 倒退
 const Backoff = () => {
+    if (isAdjustingTime.value) return;
+    isAdjustingTime.value = true;
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).subtract(1, 'hour').valueOf();
 
     // 检查是否达到最小值
     if (timePlay.value < min.value) {
+        isJumpingDay.value = true; // 标记为日期跳跃
         isProgrammaticDateChange.value = true;
         // 跳到前一天
         timePick.value = dayjs(timePick.value).subtract(1, 'day').toDate();
         timePlay.value = max.value; // 加满进度条，设置为最大值
     }
+    isAdjustingTime.value = false;
 };
 
 // 暂停/播放
@@ -161,15 +169,19 @@ const togglePlay = () => {
 
 // 前进
 const Fastforward = () => {
+    if (isAdjustingTime.value) return;
+    isAdjustingTime.value = true;
     const previousTime = timePlay.value;
     timePlay.value = dayjs(previousTime).add(1, 'hour').valueOf();
     // 检查是否达到最大值
     if (timePlay.value > max.value) {
+        isJumpingDay.value = true; // 标记为日期跳跃
         isProgrammaticDateChange.value = true;
         // 跳到下一天
         timePick.value = dayjs(timePick.value).add(1, 'day').toDate();
         timePlay.value = min.value; // 清零进度条
     }
+    isAdjustingTime.value = false;
 };
 
 const min = ref(dayjs(timePick.value).startOf("day").valueOf());
@@ -238,13 +250,20 @@ watch(timePick, (newVal) => {
         timePlay.value = selectedDate.startOf("day").valueOf();
     }
 });
+
 watch(timePlay, (newVal) => {
+    if (isAdjustingTime.value) return;
     const currentTime = dayjs(newVal);
     if (currentTime.minute() === 0 && currentTime.second() === 0) {
-        callUIInteraction({
-            FunctionName: predictionType.value,
-            Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
-        });
+        if (isJumpingDay.value) {
+            isJumpingDay.value = false;
+        } else {
+            callUIInteraction({
+                FunctionName: predictionType.value,
+                Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+            });
+            console.log(dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss'));
+        }
     }
     if (currentTime.isSame(dayjs(max.value))) {
         activePlay.value = '';
@@ -289,7 +308,7 @@ const myHandleResponseFunction = (data) => {
 }
 
 onMounted(() => {
-    callUIInteraction({
+callUIInteraction({
         FunctionName: `海浪预测`,
     });
     callUIInteraction({
@@ -299,7 +318,7 @@ onMounted(() => {
     addResponseEventListener("handle_responses", myHandleResponseFunction);
 })
 onBeforeUnmount(() => {
-
+    
 });
 </script>
 
