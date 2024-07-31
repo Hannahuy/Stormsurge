@@ -1,24 +1,15 @@
 <template>
     <div class="leftbox">
-        <div class="leftbox-top-content">
-            <div class="leftbox-top-title">
-                <span>浮标模型</span>
-            </div>
-            <div class="leftbox-top-content-btn">
-                <el-button type="primary" class="leftbox-top-content-botton" :class="{ 'active': isShowSelected }"
-                    @click="toggleShow">显 示</el-button>
-                <el-button type="primary" class="leftbox-top-content-botton" :class="{ 'active': !isShowSelected }"
-                    @click="toggleHide">隐 藏</el-button>
-            </div>
-        </div>
         <div class="leftbox-top">
             <div class="leftbox-top-title">
+                <img :src="currentImage" alt="" class="FBshow" @click="toggleImage">
                 <span>水位变化</span>
             </div>
             <div id="TideEcharts"></div>
         </div>
         <div class="leftbox-bottom">
             <div class="leftbox-top-title">
+                <img :src="currentImage" alt="" class="FBshow" @click="toggleImage">
                 <span>波高变化</span>
             </div>
             <div id="WaveheightEcharts"></div>
@@ -52,21 +43,24 @@ import dayjs from "dayjs";
 import { callUIInteraction, addResponseEventListener, } from "../../module/webrtcVideo/webrtcVideo.js";
 import tabledataJson from "/public/data/实时监测.json";
 import { ElMessage } from 'element-plus'
+import imgshow from '../../assets/img/浮标.png'
+import imageshow from '../../assets/img/浮标 (1).png'
 
-const isShowSelected = ref(true); // 默认选中“显示”
-const toggleShow = () => {
-    isShowSelected.value = true; // 选中“显示”
-    callUIInteraction({
-        FunctionName: '浮标模型',
-        State: true
-    })
-};
-const toggleHide = () => {
-    isShowSelected.value = false; // 选中“隐藏”
-    callUIInteraction({
-        FunctionName: '浮标模型',
-        State: false
-    })
+const currentImage = ref(imageshow);
+const toggleImage = () => {
+    if (currentImage.value === imageshow) {
+        callUIInteraction({
+            FunctionName: '浮标模型',
+            State: false
+        })
+        currentImage.value = imgshow;
+    } else {
+        callUIInteraction({
+            FunctionName: '浮标模型',
+            State: true
+        })
+        currentImage.value = imageshow;
+    }
 };
 
 const timePick = ref(dayjs("2024-06-14").toDate());
@@ -271,7 +265,7 @@ const Tideinit = () => {
                 }
             }
         ],
-        grid: { x: 35, y: 30, x2: 15, y2: 25 },
+        grid: { x: 35, y: 40, x2: 15, y2: 25 },
     };
     TideEchartsdata.setOption(options);
 };
@@ -360,7 +354,7 @@ const Waveheightinit = () => {
                 // }
             }
         ],
-        grid: { x: 35, y: 30, x2: 15, y2: 25 },
+        grid: { x: 35, y: 40, x2: 15, y2: 25 },
     };
     WaveheightEchartsdata.setOption(options);
 };
@@ -399,13 +393,13 @@ onBeforeUnmount(() => {
 
 .leftbox-top {
     width: 100%;
-    height: 300px;
+    height: 350px;
 }
 
-.leftbox-top-content {
+/* .leftbox-top-content {
     width: 100%;
     height: 110px;
-}
+} */
 
 .leftbox-top-title {
     width: 380px;
@@ -427,41 +421,41 @@ onBeforeUnmount(() => {
     letter-spacing: 5px;
 }
 
-.leftbox-top-content-btn {
+/* .leftbox-top-content-btn {
     width: 100%;
     height: 65px;
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-}
+} */
 
-.leftbox-top-content-botton {
+/* .leftbox-top-content-botton {
     height: 32px;
     width: 80px;
     border: 0px;
     border-radius: 0;
-    /* background-color: #116AD4; */
     background-color: #8ca6bb;
 }
 
 .leftbox-top-content-botton.active {
     background-color: #116AD4;
-}
+} */
 
 .leftbox-bottom {
     width: 100%;
-    height: 300px;
+    height: 350px;
+    margin-top: 10px;
 }
 
 #TideEcharts {
     width: 380px;
-    height: 240px;
+    height: 290px;
     margin-top: 5px;
 }
 
 #WaveheightEcharts {
     width: 380px;
-    height: 240px;
+    height: 290px;
     margin-top: 5px;
 }
 
@@ -614,5 +608,12 @@ onBeforeUnmount(() => {
 :deep(.el-slider__stop) {
     background-color: #fff;
     width: 2px;
+}
+
+.FBshow {
+    margin-right: 10px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
 }
 </style>
