@@ -22,7 +22,8 @@ onMounted(() => {
         () => {
             console.log("成功");
             callUIInteraction({
-                function: "刷新/true",
+                ModuleName:'其他',
+                FunctionName: "刷新",
             });
         },
         () => {

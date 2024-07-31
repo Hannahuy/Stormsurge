@@ -112,6 +112,7 @@ const toggleBackground = (button) => {
         max.value = dayjs(timePick.value).endOf("day").valueOf();
 
         callUIInteraction({
+            ModuleName: '模拟预测',
             FunctionName: name,
             Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
         });
@@ -259,6 +260,7 @@ watch(timePlay, (newVal) => {
             isJumpingDay.value = false;
         } else {
             callUIInteraction({
+                ModuleName: '模拟预测',
                 FunctionName: predictionType.value,
                 Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
             });
@@ -303,17 +305,19 @@ const myHandleResponseFunction = (data) => {
 }
 
 onMounted(() => {
-callUIInteraction({
+    callUIInteraction({
+        ModuleName: '模拟预测',
         FunctionName: `海浪预测`,
     });
     callUIInteraction({
+        ModuleName: '模拟预测',
         FunctionName: `海浪预测时间轴`,
         Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
     addResponseEventListener("handle_responses", myHandleResponseFunction);
 })
 onBeforeUnmount(() => {
-    
+
 });
 </script>
 

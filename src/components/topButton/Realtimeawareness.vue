@@ -50,12 +50,14 @@ const currentImage = ref(imageshow);
 const toggleImage = () => {
     if (currentImage.value === imageshow) {
         callUIInteraction({
+            ModuleName:'实时感知',
             FunctionName: '浮标模型',
             State: false
         })
         currentImage.value = imgshow;
     } else {
         callUIInteraction({
+            ModuleName:'实时感知',
             FunctionName: '浮标模型',
             State: true
         })
@@ -175,6 +177,7 @@ watch(timePlay, (newVal) => {
             const waterLevel = parseFloat(tabledataJson[hour].waterlevel); // 获取对应的 waterlevel 并转换为浮点型
             const wavehight = parseFloat(tabledataJson[hour].Waveheight);
             callUIInteraction({
+                ModuleName:'实时感知',
                 FunctionName: '实时感知时间轴',
                 Waterhigh: waterLevel,
                 Wavehigh: wavehight
@@ -363,6 +366,7 @@ onMounted(() => {
     Tideinit();
     Waveheightinit();
     callUIInteraction({
+        ModuleName:'实时感知',
         FunctionName: `实时感知时间轴`,
         Waterhigh: tabledataJson[0].waterlevel,
         Wavehigh: tabledataJson[0].Waveheight

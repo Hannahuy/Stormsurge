@@ -147,6 +147,7 @@ const swtichvalue = ref(false);
 let intervalId;
 const handleswtich = (e) => {
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '是否实时',
         State: e
     });
@@ -155,12 +156,14 @@ const handleswtich = (e) => {
         const totalSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
         timevalue.value = totalSeconds;
         callUIInteraction({
+            ModuleName:'虚拟仿真',
             FunctionName: '虚拟仿真时间模拟',
             Time: timevalue.value
         });
         intervalId = setInterval(() => {
             timevalue.value++;
             callUIInteraction({
+                ModuleName:'虚拟仿真',
                 FunctionName: '虚拟仿真时间模拟',
                 Time: timevalue.value
             });
@@ -219,6 +222,7 @@ const selectDetailIcon = (icon) => {
             break;
     }
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '选中的天气详情图标',
         Weather: selectedWeatherIcon
     });
@@ -232,6 +236,7 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = cloudyday;
             selectedIconDetail.value = 'sunnyDetail';
             callUIInteraction({
+                ModuleName:'虚拟仿真',
                 FunctionName: '选中的天气详情图标',
                 Weather: '晴天'
             });
@@ -242,6 +247,7 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = rainstormday;
             selectedIconDetail.value = 'heavyrainDetail';
             callUIInteraction({
+                ModuleName:'虚拟仿真',
                 FunctionName: '选中的天气详情图标',
                 Weather: '中雨'
             });
@@ -252,6 +258,7 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = Fogday;
             selectedIconDetail.value = 'fogDetail';
             callUIInteraction({
+                ModuleName:'虚拟仿真',
                 FunctionName: '选中的天气详情图标',
                 Weather: '大雾'
             });
@@ -262,6 +269,7 @@ const updateWeatherDetails = (icon) => {
             weatherthree.value = heavysnow;
             selectedIconDetail.value = 'sunnyDetail';
             callUIInteraction({
+                ModuleName:'虚拟仿真',
                 FunctionName: '选中的天气详情图标',
                 Weather: '小雪'
             });
@@ -278,6 +286,7 @@ const addtime = () => {
     timevalue.value += 3600;
     sessionStorage.setItem('timevalue', timevalue.value);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真时间模拟',
         Time: timevalue.value
     });
@@ -287,6 +296,7 @@ const decreasetime = () => {
     timevalue.value -= 3600;
     sessionStorage.setItem('timevalue', timevalue.value);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真时间模拟',
         Time: timevalue.value
     });
@@ -296,6 +306,7 @@ const addintensity = () => {
     Windintensity.value++;
     sessionStorage.setItem('Windintensity', Windintensity.value);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真风强度',
         FQD: Windintensity.value
     });
@@ -305,6 +316,7 @@ const decreaseintensity = () => {
     Windintensity.value--;
     sessionStorage.setItem('Windintensity', Windintensity.value);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真风强度',
         FQD: Windintensity.value
     });
@@ -314,6 +326,7 @@ const adddirection = () => {
     Winddirection.value++;
     sessionStorage.setItem('Winddirection', Winddirection.value);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真风向',
         FX: Winddirection.value
     });
@@ -323,6 +336,7 @@ const decreasedirection = () => {
     Winddirection.value--;
     sessionStorage.setItem('Winddirection', Winddirection.value);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真风向',
         FX: Winddirection.value
     });
@@ -331,6 +345,7 @@ const decreasedirection = () => {
 const getWindintensity = (e) => {
     sessionStorage.setItem('Windintensity', e);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真风强度',
         FQD: e
     });
@@ -339,6 +354,7 @@ const getWindintensity = (e) => {
 const getWinddirection = (e) => {
     sessionStorage.setItem('Winddirection', e);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真风向',
         FQD: e
     });
@@ -347,6 +363,7 @@ const getWinddirection = (e) => {
 const gettimevalue = (e) => {
     sessionStorage.setItem('timevalue', e);
     callUIInteraction({
+        ModuleName:'虚拟仿真',
         FunctionName: '虚拟仿真时间模拟',
         Time: e
     });
@@ -371,6 +388,7 @@ onMounted(() => {
 
         if (iconPath && weatherIcons[iconPath]) {
             callUIInteraction({
+                ModuleName:'虚拟仿真',
                 FunctionName: '选中的天气详情图标',
                 Weather: weatherIcons[iconPath]
             });
@@ -383,6 +401,7 @@ onMounted(() => {
                         : '';
         if (iconPath && weatherIcons[iconPath]) {
             callUIInteraction({
+                ModuleName:'虚拟仿真',
                 FunctionName: '选中的天气详情图标',
                 Weather: weatherIcons[iconPath]
             });

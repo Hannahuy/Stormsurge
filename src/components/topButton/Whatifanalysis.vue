@@ -49,6 +49,7 @@ const descriptions = {
 
 onMounted(() => {
     callUIInteraction({
+        ModuleName:'假设分析',
         FunctionName: `${descriptions['checkListtwo']}`,
         State: '0'
     });
@@ -60,6 +61,7 @@ watch(checkListone, (newValue, oldValue) => {
 
     if (removed.length) {
         callUIInteraction({
+            ModuleName:'假设分析',
             FunctionName: `${descriptions['checkListone']}${removed}`,
             State: false
         });
@@ -68,6 +70,7 @@ watch(checkListone, (newValue, oldValue) => {
     if (added.length) {
         setTimeout(() => {
             callUIInteraction({
+                ModuleName:'假设分析',
                 FunctionName: `${descriptions['checkListone']}${added[added.length - 1]}`,
                 State: true
             });
@@ -80,6 +83,7 @@ watch(checkListtwo, (newValue, oldValue) => {
     if (added.length) {
         const numericValue = parseInt(added[added.length - 1]);
         callUIInteraction({
+            ModuleName:'假设分析',
             FunctionName: `${descriptions['checkListtwo']}`,
             State: numericValue
         });
