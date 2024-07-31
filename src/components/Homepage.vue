@@ -142,6 +142,7 @@ const setActiveButton = (button) => {
     Tideinitsss();
     Tideinitssss();
     callUIInteraction({
+      ModuleName:`${lastActiveButton.value}`,
       FunctionName: `${lastActiveButton.value}`,
       State: false,
     });
@@ -150,10 +151,12 @@ const setActiveButton = (button) => {
     lastActiveButton.value = activeButton.value
     activeButton.value = button
     callUIInteraction({
+      ModuleName:`${lastActiveButton.value}`,
       FunctionName: `${lastActiveButton.value}`,
       State: false,
     });
     callUIInteraction({
+      ModuleName:`${button}`,
       FunctionName: `${button}`,
       State: true,
     });
