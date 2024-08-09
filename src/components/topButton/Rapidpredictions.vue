@@ -52,24 +52,20 @@
         </div>
     </div>
     <div v-show="showbar" class="sidebar">
-        <div class="bar">
-            <div class="color-bar-number">
-                <span>3(m)</span>
-                <span>1.5(m)</span>
-                <span>0(m)</span>
-            </div>
-            <div class="color-bar"></div>
+        <div :style="adjustedStylelang">
+            <span class="sidebar-span">{{ colorvalue }}</span>
         </div>
+        <el-slider v-model="colorvalue" :step="0.1" vertical height="200px" :min="0" :max="3" :marks="colormarks"
+            placement="left" @change="getcolorvalue" />
+        <div class="color-bar"></div>
     </div>
     <div class="sidebar" v-show="shownextbar">
-        <div class="nextbar">
-            <div class="color-nextbar-number">
-                <span>3(m)</span>
-                <span>1(m)</span>
-                <span>-2(m)</span>
-            </div>
-            <div class="color-nextbar"></div>
+        <div :style="adjustedStylechao">
+            <span class="sidebar-span2">{{ colorvalue2 }}</span>
         </div>
+        <el-slider v-model="colorvalue2" :step="0.1" vertical height="200px" :min="-2" :max="3" :marks="colormarks2"
+            placement="left" @change="getcolorvalue2" />
+        <div class="color-nextbar"></div>
     </div>
 </template>
 
@@ -86,6 +82,20 @@ const Lat = ref();
 const Data = ref([]);
 const showBottom = ref(false);
 const activeButton = ref('wave'); // 默认选择海浪预测
+const colorvalue = ref(3);
+const colorvalue2 = ref(3);
+const colormarks = {
+    0: '0m',
+    1: '',
+    2: '',
+};
+const colormarks2 = {
+    '-2': '-2m',
+    '-1': '',
+    '0': '',
+    '1': '',
+    '2': '',
+};
 
 const timePick = ref(dayjs("2024-03-21").toDate());
 const timePlay = ref(dayjs("2024-03-21 12:00").valueOf()); // 默认设置为 2024-03-21 12:00
@@ -216,7 +226,23 @@ const adjustedStyle = computed(() => {
     }
     return baseStyle;
 });
-
+const adjustedStylelang = computed(() => {
+    return {
+        bottom: `${30 + colorvalue.value * 60}px`,
+        position: 'absolute',
+    };
+});
+const adjustedStylechao = computed(() => {
+    const minBottom = 45;
+    const maxBottom = 225;
+    const range = maxBottom - minBottom;
+    const valueRange = 5;
+    const bottom = minBottom + ((colorvalue2.value + 2) / valueRange) * range;
+    return {
+        bottom: `${bottom}px`,
+        position: 'absolute',
+    };
+});
 // 定义 slider 的刻度
 const marks = computed(() => {
     const marks = {};
@@ -277,6 +303,20 @@ const gettimePlay = (e) => {
     if (activePlay.value === "play") {
         activePlay.value = "";
     }
+};
+const getcolorvalue = (e) => {
+    callUIInteraction({
+        ModuleName: '模拟预测',
+        FunctionName: '海浪预测色带值',
+        Value: e
+    });
+};
+const getcolorvalue2 = (e) => {
+    callUIInteraction({
+        ModuleName: '模拟预测',
+        FunctionName: '潮位预测色带值',
+        Value: e
+    });
 };
 
 const showbar = computed(() => {
@@ -526,6 +566,33 @@ onBeforeUnmount(() => {
     font-size: 14px;
 }
 
+.sidebar-span {
+    width: 25px;
+    height: 15px;
+    background-color: #42aeff;
+    border-radius: 0.25rem;
+    color: white;
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    position: absolute;
+    right: 15px;
+    bottom: 0px;
+}
+
+.sidebar-span2 {
+    width: 25px;
+    height: 15px;
+    background-color: #42aeff;
+    border-radius: 0.25rem;
+    color: white;
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    position: absolute;
+    right: 15px;
+}
+
 .bottombox-slider :deep(.el-slider__button) {
     background-color: transparent;
     border: 0;
@@ -542,21 +609,41 @@ onBeforeUnmount(() => {
     background-image: url("../../assets/img/框-bg.png");
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    width: 70px;
-    height: 200px;
+    width: 90px;
+    height: 240px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.bar {
-    display: flex;
-    align-items: center;
+.sidebar :deep(.el-slider__button) {
+    display: none;
+}
+
+.sidebar :deep(.el-slider.is-vertical .el-slider__bar) {
+    width: 10px;
+    border-radius: 20px;
+}
+
+.sidebar :deep(.el-slider.is-vertical .el-slider__runway) {
+    width: 10px;
+    border-radius: 20px;
+}
+
+.sidebar :deep(.el-slider__stop) {
+    background-color: #fff;
+    width: 10px;
+    height: 2px;
+}
+
+.sidebar :deep(.el-slider.is-vertical .el-slider__marks-text) {
+    left: -28px !important;
+    color: white;
 }
 
 .color-bar {
     width: 10px;
-    height: 176px;
+    height: 200px;
     background: linear-gradient(180deg,
             #ff0000 5%,
             #ff8800 20%,
@@ -585,14 +672,10 @@ onBeforeUnmount(() => {
 
 .color-nextbar {
     width: 10px;
-    height: 176px;
-    background: linear-gradient(180deg,
-            #ff0000 5%,
-            #ff8800 20%,
-            #ffdb00 35%,
-            #0cd112 50%,
-            #0dc1ce 70%,
-            #2323f5 95%);
+    height: 200px;
+    background-image: url('../../assets/img/colorbar.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
     border-radius: 9px;
 }
 
