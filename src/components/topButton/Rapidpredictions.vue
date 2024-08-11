@@ -680,14 +680,22 @@ onBeforeUnmount(() => {
 }
 
 .color-nextbar-number {
-    height: 176px;
+    /* height: 176px;
     color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     margin-right: 5px;
-    font-size: 12px;
+    font-size: 12px; */
+
+    width: 10px;
+    height: 200px;
+    background-image: url('../../assets/img/colorbar2.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border-radius: 9px;
+    
 }
 
 :deep(.el-table--fit) {
