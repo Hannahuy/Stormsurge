@@ -55,16 +55,14 @@
         <div :style="adjustedStylelang">
             <span class="sidebar-span">{{ colorvalue }}</span>
         </div>
-        <el-slider v-model="colorvalue" :step="0.1" vertical height="200px" :min="0" :max="3" :marks="colormarks"
-            placement="left" @change="getcolorvalue" />
+        <el-slider v-model="colorvalue" :step="0.1" vertical height="200px" :min="0" :max="3" :marks="colormarks" :show-tooltip="false" @change="getcolorvalue" />
         <div class="color-bar"></div>
     </div>
     <div class="sidebar" v-show="shownextbar">
         <div :style="adjustedStylechao">
             <span class="sidebar-span2">{{ colorvalue2 }}</span>
         </div>
-        <el-slider v-model="colorvalue2" :step="0.1" vertical height="200px" :min="-2" :max="3" :marks="colormarks2"
-            placement="left" @change="getcolorvalue2" />
+        <el-slider v-model="colorvalue2" :step="0.1" vertical height="200px" :min="-2" :max="3" :marks="colormarks2" :show-tooltip="false" @change="getcolorvalue2" />
         <div class="color-nextbar"></div>
     </div>
 </template>
