@@ -82,13 +82,26 @@ const descriptions = {
 const getradio = () => {
     checkListtwo.value = ['10年一遇']
 }
-
+let scene = '';
+if (radio1.value === '1') {
+    scene = '海浪情景';
+} else if (radio1.value === '2') {
+    scene = '淹没情景';
+}
 onMounted(() => {
     callUIInteraction({
         ModuleName: '假设分析',
-        FunctionName: `${descriptions['checkListtwo']}`,
+        FunctionName: `水位情景库`,
         State: '0'
     });
+    callUIInteraction({
+        ModuleName: '假设分析',
+        FunctionName: `${descriptions['checkListtwo']}`,
+        ChildrenModule:scene,
+        State: checkListtwo.value[0]
+    });
+    console.log('假设分析',`水位情景库`,0);
+    console.log('假设分析',`${descriptions['checkListtwo']}`,scene,checkListtwo.value[0]);
 });
 
 watch(checkListone, (newValue, oldValue) => {
@@ -101,6 +114,7 @@ watch(checkListone, (newValue, oldValue) => {
             FunctionName: `${descriptions['checkListone']}${removed}`,
             State: false
         });
+        console.log( '假设分析',`${descriptions['checkListone']}${removed}`,false);
     }
 
     if (added.length) {
@@ -110,6 +124,7 @@ watch(checkListone, (newValue, oldValue) => {
                 FunctionName: `${descriptions['checkListone']}${added[added.length - 1]}`,
                 State: true
             });
+            console.log('假设分析',`${descriptions['checkListone']}${added[added.length - 1]}`,true);
         }, 0);
     }
 });
@@ -123,7 +138,7 @@ watch(checkListtwo, (newValue, oldValue) => {
             FunctionName: `${descriptions['checkListtwo']}`,
             State: numericValue
         });
-        console.log(numericValue);
+        console.log('假设分析',`${descriptions['checkListtwo']}`,numericValue);
     }
 });
 
