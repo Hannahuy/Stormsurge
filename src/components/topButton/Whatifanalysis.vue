@@ -1,11 +1,12 @@
 <template>
     <div class="left-menu">
-        <div class="leftbox-top-content">
+        <div class="leftbox-top-top">
             <div class="leftbox-top-title">
                 <span>减灾措施情景库</span>
             </div>
             <div class="oneBox">
-                <el-checkbox-group v-model="checkListone" class="checkboxone" @change="handleCheckChange('checkListone')">
+                <el-checkbox-group v-model="checkListone" class="checkboxone"
+                    @change="handleCheckChange('checkListone')">
                     <el-checkbox label="无减灾设施" value="无减灾设施" />
                     <el-checkbox label="加防潮堤" value="加防潮堤" />
                     <el-checkbox label="加防汛沙袋" value="加防汛沙袋" />
@@ -16,17 +17,38 @@
             <div class="leftbox-top-title">
                 <span>水位情景库</span>
             </div>
+            <div class="waterBox">
+                <span>水位高度：&nbsp;</span>
+                <el-input-number v-model="inputvalue" size="large" style="width: 150px" :min="0" :max="100" />
+                <span>&nbsp;&nbsp;米</span>
+            </div>
+        </div>
+        <div class="leftbox-top-bottom">
+            <div class="leftbox-top-title">
+                <span>重现期情景库</span>
+            </div>
+            <div class="radiobox">
+                <el-radio-group v-model="radio1" @change="getradio">
+                    <el-radio value="1" size="large">海浪情景</el-radio>
+                    <el-radio value="2" size="large">淹没情景</el-radio>
+                </el-radio-group>
+                <div class="switchbox" v-if="showdimension">
+                    <el-switch v-model="dimensionvalue" class="ml-2" inline-prompt active-text="二维"
+                        inactive-text="三维" />
+                </div>
+            </div>
             <div class="twoBox">
-                <el-checkbox-group v-model="checkListtwo" class="checkboxtwo" @change="handleCheckChange('checkListtwo')">
+                <el-checkbox-group v-model="checkListtwo" class="checkboxtwo"
+                    @change="handleCheckChange('checkListtwo')">
                     <div class="checkbox-column">
-                        <el-checkbox label="0米" value="0m" />
-                        <el-checkbox label="1米" value="1m" />
-                        <el-checkbox label="2米" value="2m" />
+                        <el-checkbox label="10年一遇" value="10年一遇" />
+                        <el-checkbox label="20年一遇" value="20年一遇" />
+                        <el-checkbox label="50年一遇" value="50年一遇" />
                     </div>
                     <div class="checkbox-column">
-                        <el-checkbox label="3米" value="3m" />
-                        <el-checkbox label="4米" value="4m" />
-                        <el-checkbox label="5米" value="5m" />
+                        <el-checkbox label="100年一遇" value="100年一遇" />
+                        <el-checkbox label="200年一遇" value="200年一遇" />
+                        <el-checkbox label="1000年一遇" value="1000年一遇" />
                     </div>
                 </el-checkbox-group>
             </div>
@@ -39,17 +61,31 @@ import { ref, watch, onMounted } from 'vue';
 import { callUIInteraction } from "../../module/webrtcVideo/webrtcVideo.js";
 
 const checkListone = ref([]);
-const checkListtwo = ref(['0m']);
+const checkListtwo = ref(['10年一遇']);
+const inputvalue = ref(0);
+const radio1 = ref('1')
+const dimensionvalue = ref(true)
+const showdimension = ref(true)
+watch(radio1, (newValue) => {
+    if (newValue === '2') {
+        showdimension.value = false;
+    } else {
+        showdimension.value = true;
+    }
+});
 let lastSelected = ref('0m'); // 用于跟踪上一个选中的选项
 
 const descriptions = {
     checkListone: '减灾措施情景库',
-    checkListtwo: '水位情景库',
+    checkListtwo: '重现期情景库',
 };
+const getradio = () => {
+    checkListtwo.value = ['10年一遇']
+}
 
 onMounted(() => {
     callUIInteraction({
-        ModuleName:'假设分析',
+        ModuleName: '假设分析',
         FunctionName: `${descriptions['checkListtwo']}`,
         State: '0'
     });
@@ -61,7 +97,7 @@ watch(checkListone, (newValue, oldValue) => {
 
     if (removed.length) {
         callUIInteraction({
-            ModuleName:'假设分析',
+            ModuleName: '假设分析',
             FunctionName: `${descriptions['checkListone']}${removed}`,
             State: false
         });
@@ -70,7 +106,7 @@ watch(checkListone, (newValue, oldValue) => {
     if (added.length) {
         setTimeout(() => {
             callUIInteraction({
-                ModuleName:'假设分析',
+                ModuleName: '假设分析',
                 FunctionName: `${descriptions['checkListone']}${added[added.length - 1]}`,
                 State: true
             });
@@ -83,7 +119,7 @@ watch(checkListtwo, (newValue, oldValue) => {
     if (added.length) {
         const numericValue = parseInt(added[added.length - 1]);
         callUIInteraction({
-            ModuleName:'假设分析',
+            ModuleName: '假设分析',
             FunctionName: `${descriptions['checkListtwo']}`,
             State: numericValue
         });
@@ -122,7 +158,7 @@ const handleCheckChange = (listName) => {
     top: 12%;
     left: 20px;
     width: 440px;
-    height: 455px;
+    height: 655px;
     padding: 20px;
     box-sizing: border-box;
     background-image: url('../../assets/img/框.png');
@@ -130,9 +166,14 @@ const handleCheckChange = (listName) => {
     background-size: 100% 100%;
 }
 
-.leftbox-top-content {
+.leftbox-top-top {
     width: 100%;
     height: 200px;
+}
+
+.leftbox-top-content {
+    width: 100%;
+    height: 120px;
 }
 
 .leftbox-top-title {
@@ -292,5 +333,71 @@ const handleCheckChange = (listName) => {
     left: 5px;
     top: 0px;
     width: 6px;
+}
+
+.leftbox-top-bottom {
+    width: 100%;
+    position: relative;
+}
+
+:deep(.el-switch__core) {
+    border-radius: 0;
+    border: 1px solid #42AEFF;
+    background-color: transparent;
+}
+
+:deep(.el-switch__core .el-switch__action) {
+    border-radius: 0;
+    background-color: #42AEFF;
+}
+
+:deep(.el-switch.is-checked .el-switch__core .el-switch__inner) {
+    background-color: #08415c;
+}
+
+:deep(.el-switch__core .el-switch__inner) {
+    border: 1px solid #08415c;
+    background-color: #08415c;
+}
+
+:deep(.el-switch.is-checked .el-switch__core) {
+    background-color: #08415c;
+}
+
+:deep(.el-switch__core .el-switch__inner .is-text) {
+    color: #AFDFFD;
+}
+
+:deep(.el-radio.el-radio--large .el-radio__label) {
+    color: white;
+}
+.switchbox{
+    position: absolute;
+    right: 0px;
+    top: 60px;
+}
+.radiobox{
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.waterBox{
+    width: 100%;
+    height: 75px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+:deep(.input){
+    background-color: white;
+    border: none;
+}
+:deep(.el-input-number .el-input__inner) {
+    background-color: white;
+    border: none;
+    color: black;
 }
 </style>
