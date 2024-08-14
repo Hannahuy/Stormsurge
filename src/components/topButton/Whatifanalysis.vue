@@ -19,7 +19,8 @@
             </div>
             <div class="waterBox">
                 <span>水位高度：&nbsp;</span>
-                <el-input-number v-model="inputvalue" size="large" style="width: 150px" :min="0" :max="100" />
+                <el-input-number v-model="inputvalue" size="large" style="width: 150px" :min="0" :max="8" :step="0.1"
+                    :precision="1" @change="getinput" />
                 <span>&nbsp;&nbsp;米</span>
             </div>
         </div>
@@ -33,22 +34,22 @@
                     <el-radio value="2" size="large">淹没情景</el-radio>
                 </el-radio-group>
                 <div class="switchbox" v-if="showdimension">
-                    <el-switch v-model="dimensionvalue" class="ml-2" inline-prompt active-text="二维"
-                        inactive-text="三维" />
+                    <el-switch v-model="dimensionvalue" class="ml-2" inline-prompt active-text="二维" inactive-text="三维"
+                        @change="getdimension" />
                 </div>
             </div>
             <div class="twoBox">
                 <el-checkbox-group v-model="checkListtwo" class="checkboxtwo"
                     @change="handleCheckChange('checkListtwo')">
                     <div class="checkbox-column">
-                        <el-checkbox label="10年一遇" value="10年一遇" />
-                        <el-checkbox label="20年一遇" value="20年一遇" />
-                        <el-checkbox label="50年一遇" value="50年一遇" />
+                        <el-checkbox label="10年一遇" value='10' />
+                        <el-checkbox label="20年一遇" value='20' />
+                        <el-checkbox label="50年一遇" value='50' />
                     </div>
                     <div class="checkbox-column">
-                        <el-checkbox label="100年一遇" value="100年一遇" />
-                        <el-checkbox label="200年一遇" value="200年一遇" />
-                        <el-checkbox label="1000年一遇" value="1000年一遇" />
+                        <el-checkbox label="100年一遇" value="100" />
+                        <el-checkbox label="200年一遇" value="200" />
+                        <el-checkbox label="1000年一遇" value="1000" />
                     </div>
                 </el-checkbox-group>
             </div>
@@ -59,10 +60,12 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { callUIInteraction } from "../../module/webrtcVideo/webrtcVideo.js";
+import { ElMessage } from 'element-plus';
+
 
 const checkListone = ref([]);
-const checkListtwo = ref(['10年一遇']);
-const inputvalue = ref(0);
+const checkListtwo = ref(['10']);
+const inputvalue = ref(0.0);
 const radio1 = ref('1')
 const dimensionvalue = ref(true)
 const showdimension = ref(true)
@@ -79,8 +82,59 @@ const descriptions = {
     checkListone: '减灾措施情景库',
     checkListtwo: '重现期情景库',
 };
-const getradio = () => {
-    checkListtwo.value = ['10年一遇']
+const getradio = (e) => {
+    checkListtwo.value = [10]
+    if (e === '1') {
+        callUIInteraction({
+            ModuleName: '假设分析',
+            FunctionName: `${descriptions['checkListtwo']}`,
+            ChildrenModule: scene,
+        });
+        console.log('假设分析', `${descriptions['checkListtwo']}`, scene);
+    } else {
+        callUIInteraction({
+            ModuleName: '假设分析',
+            FunctionName: `${descriptions['checkListtwo']}`,
+            ChildrenModule: scene,
+        });
+        console.log('假设分析', `${descriptions['checkListtwo']}`, scene);
+    }
+}
+const getinput = () => {
+    if (inputvalue.value == null) {
+        ElMessage({
+            message: '请输入正确的水位高度，最多一位小数',
+            type: 'warning',
+        });
+        return;
+    }
+    callUIInteraction({
+        ModuleName: '假设分析',
+        FunctionName: `水位情景库`,
+        State: inputvalue.value
+    });
+    console.log('假设分析', `水位情景库`, inputvalue.value);
+}
+const getdimension = () => {
+    if (dimensionvalue.value) {
+        callUIInteraction({
+            ModuleName: '假设分析',
+            FunctionName: `${descriptions['checkListtwo']}`,
+            ChildrenModule: scene,
+            Dimension: `二维`,
+            State: true
+        });
+        console.log('假设分析', `${descriptions['checkListtwo']}`, scene, `二维`, true);
+    } else {
+        callUIInteraction({
+            ModuleName: '假设分析',
+            FunctionName: `${descriptions['checkListtwo']}`,
+            ChildrenModule: scene,
+            Dimension: `三维`,
+            State: true
+        });
+        console.log(`${descriptions['checkListtwo']}`, scene, `三维`, true);
+    }
 }
 let scene = '';
 if (radio1.value === '1') {
@@ -92,16 +146,30 @@ onMounted(() => {
     callUIInteraction({
         ModuleName: '假设分析',
         FunctionName: `水位情景库`,
-        State: '0'
+        State: inputvalue.value
     });
     callUIInteraction({
         ModuleName: '假设分析',
         FunctionName: `${descriptions['checkListtwo']}`,
-        ChildrenModule:scene,
+        ChildrenModule: scene,
+    });
+    callUIInteraction({
+        ModuleName: '假设分析',
+        FunctionName: `${descriptions['checkListtwo']}`,
+        ChildrenModule: scene,
         State: checkListtwo.value[0]
     });
-    console.log('假设分析',`水位情景库`,0);
-    console.log('假设分析',`${descriptions['checkListtwo']}`,scene,checkListtwo.value[0]);
+    callUIInteraction({
+        ModuleName: '假设分析',
+        FunctionName: `${descriptions['checkListtwo']}`,
+        ChildrenModule: scene,
+        Dimension: `二维`,
+        State: true
+    });
+    console.log('假设分析', `水位情景库`, inputvalue.value);
+    console.log('假设分析', `${descriptions['checkListtwo']}`, scene);
+    console.log('假设分析', `${descriptions['checkListtwo']}`, scene, checkListtwo.value[0]);
+    console.log('假设分析', `${descriptions['checkListtwo']}`, scene, `二维`, true);
 });
 
 watch(checkListone, (newValue, oldValue) => {
@@ -114,7 +182,7 @@ watch(checkListone, (newValue, oldValue) => {
             FunctionName: `${descriptions['checkListone']}${removed}`,
             State: false
         });
-        console.log( '假设分析',`${descriptions['checkListone']}${removed}`,false);
+        console.log('假设分析', `${descriptions['checkListone']}${removed}`, false);
     }
 
     if (added.length) {
@@ -124,7 +192,7 @@ watch(checkListone, (newValue, oldValue) => {
                 FunctionName: `${descriptions['checkListone']}${added[added.length - 1]}`,
                 State: true
             });
-            console.log('假设分析',`${descriptions['checkListone']}${added[added.length - 1]}`,true);
+            console.log('假设分析', `${descriptions['checkListone']}${added[added.length - 1]}`, true);
         }, 0);
     }
 });
@@ -133,12 +201,14 @@ watch(checkListtwo, (newValue, oldValue) => {
     const added = newValue.filter(item => !oldValue.includes(item));
     if (added.length) {
         const numericValue = parseInt(added[added.length - 1]);
+        const stringValue = numericValue.toString();
         callUIInteraction({
             ModuleName: '假设分析',
             FunctionName: `${descriptions['checkListtwo']}`,
-            State: numericValue
+            ChildrenModule: scene,
+            State: stringValue
         });
-        console.log('假设分析',`${descriptions['checkListtwo']}`,numericValue);
+        console.log('假设分析', `${descriptions['checkListtwo']}`, stringValue);
     }
 });
 
@@ -386,19 +456,22 @@ const handleCheckChange = (listName) => {
 :deep(.el-radio.el-radio--large .el-radio__label) {
     color: white;
 }
-.switchbox{
+
+.switchbox {
     position: absolute;
     right: 0px;
     top: 60px;
 }
-.radiobox{
+
+.radiobox {
     width: 100%;
     height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.waterBox{
+
+.waterBox {
     width: 100%;
     height: 75px;
     display: flex;
@@ -406,10 +479,12 @@ const handleCheckChange = (listName) => {
     align-items: center;
     color: white;
 }
-:deep(.input){
+
+:deep(.input) {
     background-color: white;
     border: none;
 }
+
 :deep(.el-input-number .el-input__inner) {
     background-color: white;
     border: none;
