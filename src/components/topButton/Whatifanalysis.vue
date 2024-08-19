@@ -34,8 +34,8 @@
                     <el-checkbox label="淹没情景" value="淹没情景" />
                 </el-checkbox-group>
                 <div class="switchbox" v-if="showdimension">
-                    <el-switch v-model="dimensionvalue" class="ml-2" inline-prompt active-text="二维"
-                        inactive-text="三维" />
+                    <el-switch v-model="dimensionvalue" class="ml-2" inline-prompt active-text="二维" inactive-text="三维"
+                        @change="getdimension" />
                 </div>
             </div>
             <div class="twoBox">
@@ -55,13 +55,68 @@
             </div>
         </div>
     </div>
+    <div class="colorbarBox" v-if="showWaves">
+        <div class="colornumber">
+            <span>{{ MaxValue }}m</span>
+            <span>{{ MinValue }}m</span>
+        </div>
+        <div class="colorbar"></div>
+    </div>
+    <div class="colorbarBox" v-if="showSubmerge">
+        <div class="colornumber">
+            <span>{{ MaxValue }}m</span>
+            <span>{{ MinValue }}m</span>
+        </div>
+        <div class="colorbar1"></div>
+    </div>
+    <div v-if="showBottom" class="leftbox-bottom">
+        <div class="leftbox-top-title-bottom">
+            <span>{{ titlevalue }}</span>
+        </div>
+        <div id="WaveheightEcharts">
+            <table class="custom-table">
+                <tr>
+                    <td>时间</td>
+                    <td>{{ Datatime }}</td>
+                </tr>
+                <tr>
+                    <td>经度</td>
+                    <td>{{ Lon }}°E</td>
+                </tr>
+                <tr>
+                    <td>纬度</td>
+                    <td>{{ Lat }}°N</td>
+                </tr>
+                <tr v-if="showWaveheight">
+                    <td>波高</td>
+                    <td>{{ Waveheight }}</td>
+                </tr>
+                <tr v-for="(item, index) in Data" :key="index">
+                    <td>{{ item.Name }}</td>
+                    <td>{{ item.Value }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </template>
 
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue';
-import { callUIInteraction } from "../../module/webrtcVideo/webrtcVideo.js";
+import { callUIInteraction, addResponseEventListener } from "../../module/webrtcVideo/webrtcVideo.js";
 import { ElMessage } from 'element-plus';
 
+const MaxValue = ref(0);
+const MinValue = ref(0);
+const showWaves = ref(false);
+const showSubmerge = ref(false);
+const showBottom = ref(false);
+const showWaveheight = ref(false)
+const Waveheight = ref('')
+const Datatime = ref();
+const titlevalue = ref('')
+const Lon = ref();
+const Lat = ref();
+const Data = ref([]);
 const checkListone = ref([]);
 const checkListtwo = ref([]);
 const inputvalue = ref(0.0);
@@ -92,13 +147,23 @@ const descriptions = {
     checkListtwo: '重现期情景库',
 };
 
+let isdimension = '';
+if (dimensionvalue.value === true) {
+    isdimension = '二维';
+} else if (dimensionvalue.value === false) {
+    isdimension = '三维';
+}
 const getcheck = (checked) => {
+    showBottom.value = false;
+    titlevalue.value = checkList.value[0]
     if (checked.length > 1) {
         checkList.value = [checked[checked.length - 1]];
     } else {
         checkList.value = checked;
     }
     if (checkList.value[0] === '海浪情景') {
+        showWaves.value = true;
+        showSubmerge.value = false;
         callUIInteraction({
             ModuleName: '假设分析',
             FunctionName: `${descriptions['checkListtwo']}`,
@@ -106,15 +171,18 @@ const getcheck = (checked) => {
             State: checkListtwo.value[0],
             Dimension: isdimension
         });
-        console.log('假设分析', `${descriptions['checkListtwo']}`, checkList.value[0], checkListtwo.value[0], isdimension);
     } else if (checkList.value[0] === '淹没情景') {
+        showWaves.value = false;
+        showSubmerge.value = true;
         callUIInteraction({
             ModuleName: '假设分析',
             FunctionName: `${descriptions['checkListtwo']}`,
             ChildrenModule: checkList.value[0],
             State: checkListtwo.value[0]
         });
-        console.log('假设分析', `${descriptions['checkListtwo']}`, checkList.value[0], checkListtwo.value[0]);
+    } else {
+        showWaves.value = false;
+        showSubmerge.value = false;
     }
 };
 
@@ -131,25 +199,7 @@ const getinput = () => {
         FunctionName: `水位情景库`,
         State: inputvalue.value
     });
-    console.log('假设分析', `水位情景库`, inputvalue.value);
 };
-
-
-
-onMounted(() => {
-    callUIInteraction({
-        ModuleName: '假设分析',
-        FunctionName: `水位情景库`,
-        State: inputvalue.value
-    });
-    callUIInteraction({
-        ModuleName: '假设分析',
-        FunctionName: `减灾措施情景库无减灾设施`,
-        State: false
-    });
-    console.log('假设分析', `水位情景库`, inputvalue.value);
-    console.log('假设分析', `减灾措施情景库无减灾设施`, false);
-});
 
 watch(checkListone, (newValue, oldValue) => {
     const added = newValue.filter(item => !oldValue.includes(item));
@@ -161,7 +211,6 @@ watch(checkListone, (newValue, oldValue) => {
             FunctionName: `${descriptions['checkListone']}${removed}`,
             State: false
         });
-        console.log('假设分析', `${descriptions['checkListone']}${removed}`, false);
     }
 
     if (added.length) {
@@ -171,28 +220,33 @@ watch(checkListone, (newValue, oldValue) => {
                 FunctionName: `水位情景库`,
                 State: inputvalue.value
             });
-            console.log('假设分析', `水位情景库`, inputvalue.value);
             callUIInteraction({
                 ModuleName: '假设分析',
                 FunctionName: `${descriptions['checkListone']}${added[added.length - 1]}`,
                 State: true
             });
-            console.log('假设分析', `${descriptions['checkListone']}${added[added.length - 1]}`, true);
         }, 0);
     }
 });
 
-let isdimension = '';
-if (dimensionvalue.value === true) {
-    isdimension = '二维';
-} else if (dimensionvalue.value === false) {
-    isdimension = '三维';
+const getdimension = (e) => {
+    if (e == true) {
+        callUIInteraction({
+            ModuleName: '假设分析',
+            FunctionName: `${descriptions['checkListtwo']}`,
+            Dimension: '二维'
+        });
+    } else if (e == false) {
+        callUIInteraction({
+            ModuleName: '假设分析',
+            FunctionName: `${descriptions['checkListtwo']}`,
+            Dimension: '三维'
+        });
+    }
 }
 watch(dimensionvalue, (newValue) => {
     isdimension = newValue ? '二维' : '三维';
 });
-
-
 watch(checkListtwo, (newValue, oldValue) => {
     if (newValue == '') {
         callUIInteraction({
@@ -200,11 +254,11 @@ watch(checkListtwo, (newValue, oldValue) => {
             FunctionName: `${descriptions['checkListtwo']}`,
             State: false
         });
-        console.log('假设分析', `${descriptions['checkListtwo']}`, false);
     }
 });
 
 const handleCheckChange = (listName) => {
+    showBottom.value = false;
     const list = listName === 'checkListone' ? checkListone : checkListtwo;
     // 如果是 checkListtwo，确保只能选择一个
     if (listName === 'checkListtwo') {
@@ -231,7 +285,6 @@ const handleCheckChange = (listName) => {
                 State: lastSelected.value,
                 Dimension: isdimension
             });
-            console.log('假设分析', `${descriptions['checkListtwo']}`, scene, lastSelected.value, isdimension);
         } else if (scene === '淹没情景') {
             callUIInteraction({
                 ModuleName: '假设分析',
@@ -239,7 +292,6 @@ const handleCheckChange = (listName) => {
                 ChildrenModule: scene,
                 State: lastSelected.value
             });
-            console.log('假设分析', `${descriptions['checkListtwo']}`, scene, lastSelected.value);
         }
 
     } else {
@@ -249,6 +301,46 @@ const handleCheckChange = (listName) => {
         }
     }
 };
+
+const myHandleResponseFunction = (data) => {
+    const datajson = JSON.parse(data);
+    if (datajson.Function === '报错') {
+        ElMessage({
+            message: datajson.Type,
+            type: 'warning',
+        });
+        return
+    } else if (datajson.Function === '假设分析海浪情景色带范围' || datajson.Function === '假设分析淹没情景色带范围') {
+        MaxValue.value = datajson.MaxValue;
+        MinValue.value = datajson.MinValue;
+    } else if (datajson.Function === '假设分析海浪情景点击查询' || datajson.Function === '假设分析淹没情景点击查询') {
+        if (datajson.Function === '假设分析淹没情景点击查询') {
+            showWaveheight.value = true;
+            Waveheight.value = datajson.Zeta.toFixed(1);
+        } else{
+            showWaveheight.value = false;
+        }
+        Datatime.value = datajson.DataTime;
+        Lon.value = datajson.Lon;
+        Lat.value = datajson.Lat;
+        Data.value = datajson.Data;
+        showBottom.value = true;
+    }
+}
+
+onMounted(() => {
+    callUIInteraction({
+        ModuleName: '假设分析',
+        FunctionName: `水位情景库`,
+        State: inputvalue.value
+    });
+    callUIInteraction({
+        ModuleName: '假设分析',
+        FunctionName: `减灾措施情景库无减灾设施`,
+        State: false
+    });
+    addResponseEventListener("handle_responses", myHandleResponseFunction);
+});
 </script>
 
 <style scoped>
@@ -503,5 +595,110 @@ const handleCheckChange = (listName) => {
     background-color: white;
     border: none;
     color: black;
+}
+
+.colorbarBox {
+    position: absolute;
+    bottom: 35px;
+    right: 20px;
+    background-image: url("../../assets/img/框-bg.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    width: 7vh;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.colorbarBox span {
+    width: 25px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    bottom: 0px;
+}
+
+.colornumber {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0 20px 0;
+}
+
+.colorbar {
+    width: 10px;
+    height: 200px;
+    border-radius: 9px;
+    background-image: url('../../assets/img/bar1.jpg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.colorbar1 {
+    width: 10px;
+    height: 200px;
+    border-radius: 9px;
+    background-image: url('../../assets/img/bar2.jpg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.leftbox-bottom {
+    position: absolute;
+    background-image: url('../../assets/img/框.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    width: 400px;
+    /* height: 300px; */
+    top: 280px;
+    right: 15px;
+}
+
+.leftbox-top-title-bottom {
+    width: 400px;
+    height: 45px;
+    background-image: url('../../assets/img/标题背景.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    line-height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.leftbox-top-title-bottom span {
+    /* margin-left: 40px; */
+    font-weight: 600;
+    color: #B7CFFC;
+    font-size: 20px;
+    letter-spacing: 5px;
+}
+
+#WaveheightEcharts {
+    padding: 0 20px 0 20px;
+    width: 400px;
+    /* height: 240px; */
+    margin-top: 5px;
+}
+
+.custom-table {
+    border-collapse: collapse;
+    width: 100%;
+    color: #b7cffc;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.custom-table th,
+.custom-table td {
+    border: 1px solid #416491;
+    padding: 8px;
+    text-align: center;
+    height: 38px;
+    width: 50%;
 }
 </style>
