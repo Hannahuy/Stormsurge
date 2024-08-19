@@ -234,12 +234,17 @@ const getdimension = (e) => {
         callUIInteraction({
             ModuleName: '假设分析',
             FunctionName: `${descriptions['checkListtwo']}`,
+            ChildrenModule: checkList.value[0],
+            State: checkListtwo.value[0],
             Dimension: '二维'
         });
     } else if (e == false) {
+        showBottom.value = false;
         callUIInteraction({
             ModuleName: '假设分析',
             FunctionName: `${descriptions['checkListtwo']}`,
+            ChildrenModule: checkList.value[0],
+            State: checkListtwo.value[0],
             Dimension: '三维'
         });
     }
