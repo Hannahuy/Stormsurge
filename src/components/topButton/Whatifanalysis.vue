@@ -162,7 +162,11 @@ const getcheck = (checked) => {
         checkList.value = checked;
     }
     if (checkList.value[0] === '海浪情景') {
-        showWaves.value = true;
+        if (isdimension == '二维') {
+            showWaves.value = true;
+        } else if (isdimension == '三维') {
+            showWaves.value = false;
+        }
         showSubmerge.value = false;
         callUIInteraction({
             ModuleName: '假设分析',
@@ -231,6 +235,7 @@ watch(checkListone, (newValue, oldValue) => {
 
 const getdimension = (e) => {
     if (e == true) {
+        showWaves.value = true;
         callUIInteraction({
             ModuleName: '假设分析',
             FunctionName: `${descriptions['checkListtwo']}`,
@@ -239,6 +244,7 @@ const getdimension = (e) => {
             Dimension: '二维'
         });
     } else if (e == false) {
+        showWaves.value = false;
         showBottom.value = false;
         callUIInteraction({
             ModuleName: '假设分析',
@@ -322,7 +328,7 @@ const myHandleResponseFunction = (data) => {
         if (datajson.Function === '假设分析淹没情景点击查询') {
             showWaveheight.value = true;
             Waveheight.value = datajson.Zeta.toFixed(2);
-        } else{
+        } else {
             showWaveheight.value = false;
         }
         Datatime.value = datajson.DataTime;

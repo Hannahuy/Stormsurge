@@ -79,10 +79,10 @@
                     <img src="../../assets/img/noon_icon.png" alt="">
                     <span>中午</span>
                 </div>
-                <div class="leftbox-middle-bottom-content">
+                <!-- <div class="leftbox-middle-bottom-content">
                     <img src="../../assets/img/night_icon.png" alt="">
                     <span>傍晚</span>
-                </div>
+                </div> -->
                 <div class="leftbox-middle-bottom-content">
                     <img src="../../assets/img/evening_icon.png" alt="">
                     <span>晚上</span>
