@@ -88,8 +88,8 @@
                     <td>{{ Lat }}°N</td>
                 </tr>
                 <tr v-if="showWaveheight">
-                    <td>波高</td>
-                    <td>{{ Waveheight }}</td>
+                    <td>水位</td>
+                    <td>{{ Waveheight }}m</td>
                 </tr>
                 <tr v-for="(item, index) in Data" :key="index">
                     <td>{{ item.Name }}</td>
@@ -321,7 +321,7 @@ const myHandleResponseFunction = (data) => {
     } else if (datajson.Function === '假设分析海浪情景点击查询' || datajson.Function === '假设分析淹没情景点击查询') {
         if (datajson.Function === '假设分析淹没情景点击查询') {
             showWaveheight.value = true;
-            Waveheight.value = datajson.Zeta.toFixed(1);
+            Waveheight.value = datajson.Zeta.toFixed(2);
         } else{
             showWaveheight.value = false;
         }
