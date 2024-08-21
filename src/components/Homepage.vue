@@ -142,7 +142,7 @@ const setActiveButton = (button) => {
     Tideinitsss();
     Tideinitssss();
     callUIInteraction({
-      ModuleName:`${lastActiveButton.value}`,
+      ModuleName: `${lastActiveButton.value}`,
       FunctionName: `${lastActiveButton.value}`,
       State: false,
     });
@@ -150,13 +150,15 @@ const setActiveButton = (button) => {
     // 否则设置为当前按钮
     lastActiveButton.value = activeButton.value
     activeButton.value = button
+    if (lastActiveButton.value) {
+      callUIInteraction({
+        ModuleName: `${lastActiveButton.value}`,
+        FunctionName: `${lastActiveButton.value}`,
+        State: false,
+      });
+    }
     callUIInteraction({
-      ModuleName:`${lastActiveButton.value}`,
-      FunctionName: `${lastActiveButton.value}`,
-      State: false,
-    });
-    callUIInteraction({
-      ModuleName:`${button}`,
+      ModuleName: `${button}`,
       FunctionName: `${button}`,
       State: true,
     });
