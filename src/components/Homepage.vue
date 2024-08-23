@@ -137,9 +137,9 @@ const setActiveButton = (button) => {
     // 如果当前按钮已经被选中，则取消选中
     lastActiveButton.value = activeButton.value
     activeButton.value = ''
-    Tideinit();
-    Tideinitss();
-    Tideinitsss();
+    leftcenter();
+    righttop();
+    rightcenter();
     callUIInteraction({
       ModuleName: `${lastActiveButton.value}`,
       FunctionName: `${lastActiveButton.value}`,
@@ -265,7 +265,7 @@ const getNextWaveData = () => {
           nextxData.value.push(formatDisplayDate(time)); // 添加到 xData7
           nextyData.value.push(item.v); // 添加到 yData7
         });
-        Tideinitssss(); // 初始化图表
+        rightbottom(); // 初始化图表
       }
     })
     .catch(error => {
@@ -312,7 +312,7 @@ const get7DayWaveData = () => {
           xData7.value.push(formatDisplayDate(time)); // 添加到 xData7
           yData7.value.push(item.v); // 添加到 yData7
         });
-        Tideinits(); // 初始化图表
+        leftbottom(); // 初始化图表
       }
     })
     .catch(error => {
@@ -343,7 +343,7 @@ const generateHours = (hours) => {
 };
 
 let TideEchartsdata = null;
-const Tideinit = () => {
+const leftcenter = () => {
   const salinityChartElement = document.getElementById("hleftbox-1-content-echarts");
   if (TideEchartsdata) {
     TideEchartsdata.dispose();
@@ -465,7 +465,7 @@ const Tideinit = () => {
   TideEchartsdata.setOption(options);
 };
 let TideEchartsdatas = null;
-const Tideinits = () => {
+const leftbottom = () => {
   const salinityChartElement = document.getElementById("hleftbox-2-content-echarts");
   if (TideEchartsdatas) {
     TideEchartsdatas.dispose();
@@ -529,7 +529,7 @@ const Tideinits = () => {
   TideEchartsdatas.setOption(options);
 };
 let TideEchartsdatass = null;
-const Tideinitss = () => {
+const righttop = () => {
   const salinityChartElement = document.getElementById("hleftbox-3-content-echarts");
   if (TideEchartsdatass) {
     TideEchartsdatass.dispose();
@@ -633,7 +633,7 @@ const Tideinitss = () => {
   TideEchartsdatass.setOption(options);
 };
 let TideEchartsdatasss = null;
-const Tideinitsss = () => {
+const rightcenter = () => {
   const salinityChartElement = document.getElementById("hleftbox-4-content-echarts");
   if (TideEchartsdatasss) {
     TideEchartsdatasss.dispose();
@@ -720,7 +720,7 @@ const Tideinitsss = () => {
   TideEchartsdatasss.setOption(options);
 };
 let TideEchartsdatassss = null;
-const Tideinitssss = () => {
+const rightbottom = () => {
   const salinityChartElement = document.getElementById("hleftbox-5-content-echarts");
   if (TideEchartsdatassss) {
     TideEchartsdatassss.dispose();
@@ -784,9 +784,9 @@ const Tideinitssss = () => {
   TideEchartsdatassss.setOption(options);
 };
 onMounted(() => {
-  Tideinit();
-  Tideinitss();
-  Tideinitsss();
+  leftcenter();
+  righttop();
+  rightcenter();
   getLastWaveData();
   getNextWaveData();
   get7DayWaveData();
@@ -798,21 +798,18 @@ onMounted(() => {
   }
 })
 onBeforeUnmount(() => {
-  if (TideEchartsdata) {
-    TideEchartsdata.dispose();
-  }
-  if (TideEchartsdatas) {
-    TideEchartsdatas.dispose();
-  }
-  if (TideEchartsdatass) {
-    TideEchartsdatass.dispose();
-  }
-  if (TideEchartsdatasss) {
-    TideEchartsdatasss.dispose();
-  }
-  if (TideEchartsdatassss) {
-    TideEchartsdatassss.dispose();
-  }
+  const echartsDataArray = [
+    TideEchartsdata,
+    TideEchartsdatas,
+    TideEchartsdatass,
+    TideEchartsdatasss,
+    TideEchartsdatassss
+  ];
+  echartsDataArray.forEach(echartsData => {
+    if (echartsData) {
+      echartsData.dispose();
+    }
+  });
 });
 </script>
 
