@@ -166,8 +166,8 @@ const setActiveButton = (button) => {
 
 const maxWaveHeight = ref(null);
 const minWaveHeight = ref(null);
-const wavemaxDataTime = ref(null); // 显示时间而不是索引
-const waveminDataTime = ref(null); // 显示时间而不是索引
+const wavemaxDataTime = ref(null);
+const waveminDataTime = ref(null); 
 
 const formatDate = (date) => {
   const year = date.getFullYear();
