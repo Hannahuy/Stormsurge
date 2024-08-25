@@ -261,9 +261,9 @@ const getNextWaveData = () => {
         nextyData.value = []; // 清空之前的数据
 
         data.forEach(item => {
-          time.setHours(time.getHours() + 3); // 增加3小时
           nextxData.value.push(formatDisplayDate(time)); // 添加到 xData7
           nextyData.value.push(item.v); // 添加到 yData7
+          time.setHours(time.getHours() + 3); // 增加3小时
         });
         rightbottom(); // 初始化图表
       }
@@ -308,9 +308,9 @@ const get7DayWaveData = () => {
         yData7.value = []; // 清空之前的数据
 
         data.forEach(item => {
-          time.setHours(time.getHours() + 3); // 增加3小时
           xData7.value.push(formatDisplayDate(time)); // 添加到 xData7
           yData7.value.push(item.v); // 添加到 yData7
+          time.setHours(time.getHours() + 3); // 增加3小时
         });
         leftbottom(); // 初始化图表
       }
