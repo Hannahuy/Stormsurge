@@ -64,15 +64,15 @@
             <div class="hleftbox-1-content-1">
               <img src="../assets/img/海浪@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
-                <span>最大波高：2.0m</span>
-                <span>{{ currentDate }} 11:00</span>
+                <span>最大波高：{{ maxWaveHeight }}m</span>
+                <span>{{ wavemaxDataTime }}</span>
               </div>
             </div>
             <div class="hleftbox-1-content-1">
               <img src="../assets/img/流场@3x.png" class="imgsize" alt="">
               <div class="hleftbox-1-content-1-span">
-                <span>最小波高：0.2m</span>
-                <span>{{ currentDate }} 05:00</span>
+                <span>最小波高：{{ minWaveHeight }}m</span>
+                <span>{{ waveminDataTime }}</span>
               </div>
             </div>
           </div>
@@ -85,7 +85,7 @@
         </div>
         <div class="hleftbox-3">
           <div class="hleftbox-1-title">
-            <span>最近一个月波高变化</span>
+            <span>过去一周波高变化</span>
           </div>
           <div id="hleftbox-2-content-echarts"></div>
         </div>
@@ -124,6 +124,7 @@ import Whatifanalysis from './topButton/Whatifanalysis.vue'
 import background from './topButton/background.vue'
 import { callUIInteraction } from "../module/webrtcVideo/webrtcVideo.js";
 import * as echarts from "echarts";
+import axios from 'axios';
 
 const activeButton = ref('')
 const lastActiveButton = ref('')
@@ -136,11 +137,9 @@ const setActiveButton = (button) => {
     // 如果当前按钮已经被选中，则取消选中
     lastActiveButton.value = activeButton.value
     activeButton.value = ''
-    Tideinit();
-    Tideinits();
-    Tideinitss();
-    Tideinitsss();
-    Tideinitssss();
+    leftcenter();
+    righttop();
+    rightcenter();
     callUIInteraction({
       ModuleName: `${lastActiveButton.value}`,
       FunctionName: `${lastActiveButton.value}`,
@@ -164,6 +163,163 @@ const setActiveButton = (button) => {
     });
   }
 }
+
+const maxWaveHeight = ref(null);
+const minWaveHeight = ref(null);
+const wavemaxDataTime = ref(null);
+const waveminDataTime = ref(null); 
+
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  return `${year}${month}${day}${hours}`; // 返回YYYYMMDDHH格式
+};
+
+const formatDisplayDate = (date) => {
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  return `${month}/${day} ${hours}:00`;
+};
+
+const getLastWaveData = () => {
+  const currentDate = new Date();
+  const startDate = new Date(currentDate);
+  startDate.setDate(currentDate.getDate() - 1); // 往前推一天
+  const staUtcTime = formatDate(startDate);
+  const endUtcTime = formatDate(currentDate);
+  const message = JSON.stringify({
+    lon: 108.050537109375,
+    lat: 18.302380604025146,
+    type: 'wave',
+    staUtcTime: staUtcTime,
+    endUtcTime: endUtcTime
+  });
+  axios.post('https://www.oceanread.com/YHYBService/v1.4.0/WS_DataQuery.asmx/QueryDataFromFull', { message }, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+    .then(res => {
+      const data = res.data.data;
+      if (data && data.length > 0) {
+        // 如果数据长度为9，则只取前8条数据
+        const processedData = data.length === 9 ? data.slice(0, 8) : data;
+        maxWaveHeight.value = Math.max(...processedData.map(item => item.v));
+        minWaveHeight.value = Math.min(...processedData.map(item => item.v));
+        const maxIndex = processedData.findIndex(item => item.v === maxWaveHeight.value);
+        const minIndex = processedData.findIndex(item => item.v === minWaveHeight.value);
+        const maxTime = new Date(startDate.getTime() + maxIndex * 3 * 60 * 60 * 1000);
+        const minTime = new Date(startDate.getTime() + minIndex * 3 * 60 * 60 * 1000);
+        wavemaxDataTime.value = formatDisplayDate(maxTime);
+        waveminDataTime.value = formatDisplayDate(minTime);
+      } else {
+        maxWaveHeight.value = null;
+        minWaveHeight.value = null;
+        wavemaxDataTime.value = null;
+        waveminDataTime.value = null;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+};
+const nextxData = ref()
+const nextyData = ref()
+const getNextWaveData = () => {
+  const currentDate = new Date();
+  const startDate = new Date(currentDate);
+  startDate.setMinutes(0, 0, 0); // 将分钟、秒和毫秒设为0，得到整点时间
+  const endDate = new Date(startDate);
+  endDate.setHours(startDate.getHours() + 24); // 往后推24小时
+  const staUtcTime = formatDate(startDate);
+  const endUtcTime = formatDate(endDate);
+  const message = JSON.stringify({
+    lon: 108.050537109375,
+    lat: 18.302380604025146,
+    type: 'wave',
+    staUtcTime: staUtcTime,
+    endUtcTime: endUtcTime
+  });
+
+  axios.post('https://www.oceanread.com/YHYBService/v1.4.0/WS_DataQuery.asmx/QueryDataFromFull', { message }, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+    .then(res => {
+      let data = res.data.data;
+
+      if (data && data.length === 9) {
+        data = data.slice(0, 8);
+      }
+      if (data && data.length === 8) {
+        let time = new Date(startDate);
+        nextxData.value = []; // 清空之前的数据
+        nextyData.value = []; // 清空之前的数据
+
+        data.forEach(item => {
+          nextxData.value.push(formatDisplayDate(time)); // 添加到 xData7
+          nextyData.value.push(item.v); // 添加到 yData7
+          time.setHours(time.getHours() + 3); // 增加3小时
+        });
+        rightbottom(); // 初始化图表
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+};
+
+const xData7 = ref();
+const yData7 = ref();
+
+const get7DayWaveData = () => {
+  const currentDate = new Date();
+  const startDate = new Date(currentDate);
+  startDate.setDate(currentDate.getDate() - 7); // 往前推一周
+  const staUtcTime = formatDate(startDate);
+  const endUtcTime = formatDate(currentDate);
+  const message = JSON.stringify({
+    lon: 108.050537109375,
+    lat: 18.302380604025146,
+    type: 'wave',
+    staUtcTime: staUtcTime,
+    endUtcTime: endUtcTime
+  });
+
+  axios.post('https://www.oceanread.com/YHYBService/v1.4.0/WS_DataQuery.asmx/QueryDataFromFull', { message }, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+    .then(res => {
+      let data = res.data.data;
+
+      if (data && data.length === 57) {
+        data = data.slice(0, 56); // 去掉第57个，只取前56个值
+      }
+
+      if (data && data.length === 56) {
+        let time = new Date(startDate);
+        xData7.value = []; // 清空之前的数据
+        yData7.value = []; // 清空之前的数据
+
+        data.forEach(item => {
+          xData7.value.push(formatDisplayDate(time)); // 添加到 xData7
+          yData7.value.push(item.v); // 添加到 yData7
+          time.setHours(time.getHours() + 3); // 增加3小时
+        });
+        leftbottom(); // 初始化图表
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+};
+
 // 30天
 const generateDates = (days) => {
   const dates = [];
@@ -176,22 +332,6 @@ const generateDates = (days) => {
   }
   return dates;
 };
-// 随机潮位
-const generateRandomDataT = (length) => {
-  const data = [];
-  for (let i = 0; i < length; i++) {
-    data.push((Math.random() * 10 - 5).toFixed(2)); // 生成-5到5之间的随机数
-  }
-  return data;
-};
-// 随机波高
-const generateRandomDataZ = (length) => {
-  const data = [];
-  for (let i = 0; i < length; i++) {
-    data.push((Math.random() * 4.9 + 0.1).toFixed(2)); // 生成0.1到5之间的随机数
-  }
-  return data;
-};
 // 24小时
 const generateHours = (hours) => {
   const timeLabels = [];
@@ -203,7 +343,7 @@ const generateHours = (hours) => {
 };
 
 let TideEchartsdata = null;
-const Tideinit = () => {
+const leftcenter = () => {
   const salinityChartElement = document.getElementById("hleftbox-1-content-echarts");
   if (TideEchartsdata) {
     TideEchartsdata.dispose();
@@ -325,22 +465,18 @@ const Tideinit = () => {
   TideEchartsdata.setOption(options);
 };
 let TideEchartsdatas = null;
-const Tideinits = () => {
+const leftbottom = () => {
   const salinityChartElement = document.getElementById("hleftbox-2-content-echarts");
   if (TideEchartsdatas) {
     TideEchartsdatas.dispose();
   }
   TideEchartsdatas = echarts.init(salinityChartElement);
-  const days = 30; // 未来30天
-  const dates = generateDates(days);
-  const randomData = generateRandomDataZ(days);
-
   const options = {
     tooltip: {
       trigger: 'axis',
     },
     xAxis: {
-      data: dates, // 使用生成的日期
+      data: xData7.value, // 使用生成的日期
       axisLabel: {
         show: true,
         textStyle: {
@@ -374,7 +510,7 @@ const Tideinits = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: [2.20, 1.82, 1.91, 2.34, 2.90, 3.30, 3.10, 1.23, 4.42, 3.21, 0.90, 1.49, 2.10, 1.22, 1.33, 3.34, 1.98, 1.23, 1.25, 2.20, 3.10, 2.34, 2.01, 1.92, 1.88, 1.78, 1.65, 1.53, 1.44, 1.32],
+        data: yData7.value,
         stack: "Total",
         smooth: true,
         lineStyle: { width: 0 },
@@ -388,12 +524,12 @@ const Tideinits = () => {
         emphasis: { focus: "series" },
       }
     ],
-    grid: { x: 35, y: 30, x2: 15, y2: 25 },
+    grid: { x: 45, y: 30, x2: 15, y2: 25 },
   };
   TideEchartsdatas.setOption(options);
 };
 let TideEchartsdatass = null;
-const Tideinitss = () => {
+const righttop = () => {
   const salinityChartElement = document.getElementById("hleftbox-3-content-echarts");
   if (TideEchartsdatass) {
     TideEchartsdatass.dispose();
@@ -402,7 +538,6 @@ const Tideinitss = () => {
 
   const hours = 24; // 24小时
   const timeLabels = generateHours(hours);
-  const randomData = generateRandomDataZ(hours);
 
   const options = {
     tooltip: {
@@ -498,7 +633,7 @@ const Tideinitss = () => {
   TideEchartsdatass.setOption(options);
 };
 let TideEchartsdatasss = null;
-const Tideinitsss = () => {
+const rightcenter = () => {
   const salinityChartElement = document.getElementById("hleftbox-4-content-echarts");
   if (TideEchartsdatasss) {
     TideEchartsdatasss.dispose();
@@ -506,7 +641,6 @@ const Tideinitsss = () => {
   TideEchartsdatasss = echarts.init(salinityChartElement);
   const hours = 24; // 24小时
   const timeLabels = generateHours(hours);
-  const randomData = generateRandomDataT(hours);
   const options = {
     tooltip: {
       trigger: 'axis',
@@ -586,22 +720,18 @@ const Tideinitsss = () => {
   TideEchartsdatasss.setOption(options);
 };
 let TideEchartsdatassss = null;
-const Tideinitssss = () => {
+const rightbottom = () => {
   const salinityChartElement = document.getElementById("hleftbox-5-content-echarts");
   if (TideEchartsdatassss) {
     TideEchartsdatassss.dispose();
   }
   TideEchartsdatassss = echarts.init(salinityChartElement);
-  const hours = 24; // 24小时
-  const timeLabels = generateHours(hours);
-  const randomData = generateRandomDataZ(hours);
-
   const options = {
     tooltip: {
       trigger: 'axis',
     },
     xAxis: {
-      data: timeLabels, // 使用生成的时间标签
+      data: nextxData.value,
       axisLabel: {
         show: true,
         textStyle: {
@@ -635,11 +765,7 @@ const Tideinitssss = () => {
         type: 'line',
         showSymbol: false,
         name: '波高',
-        data: [
-          1.20, 2.00, 1.50, 1.80, 1.70, 1.50, 1.30, 1.10,
-          1.52, 2.00, 2.34, 1.90, 1.80, 2.20, 1.76, 1.63,
-          1.37, 1.21, 1.31, 1.43, 1.27, 1.16, 1.05, 1.21
-        ],
+        data: nextyData.value,
         stack: "Total",
         smooth: true,
         lineStyle: { width: 0 },
@@ -658,11 +784,12 @@ const Tideinitssss = () => {
   TideEchartsdatassss.setOption(options);
 };
 onMounted(() => {
-  Tideinit();
-  Tideinits();
-  Tideinitss();
-  Tideinitsss();
-  Tideinitssss();
+  leftcenter();
+  righttop();
+  rightcenter();
+  getLastWaveData();
+  getNextWaveData();
+  get7DayWaveData();
   if (window.performance.navigation.type == 1) {
     console.log("页面被刷新")
     sessionStorage.clear();
@@ -671,21 +798,18 @@ onMounted(() => {
   }
 })
 onBeforeUnmount(() => {
-  if (TideEchartsdata) {
-    TideEchartsdata.dispose();
-  }
-  if (TideEchartsdatas) {
-    TideEchartsdatas.dispose();
-  }
-  if (TideEchartsdatass) {
-    TideEchartsdatass.dispose();
-  }
-  if (TideEchartsdatasss) {
-    TideEchartsdatasss.dispose();
-  }
-  if (TideEchartsdatassss) {
-    TideEchartsdatassss.dispose();
-  }
+  const echartsDataArray = [
+    TideEchartsdata,
+    TideEchartsdatas,
+    TideEchartsdatass,
+    TideEchartsdatasss,
+    TideEchartsdatassss
+  ];
+  echartsDataArray.forEach(echartsData => {
+    if (echartsData) {
+      echartsData.dispose();
+    }
+  });
 });
 </script>
 
