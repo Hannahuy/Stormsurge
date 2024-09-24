@@ -155,7 +155,7 @@ if (dimensionvalue.value === true) {
 }
 const getcheck = (checked) => {
     showBottom.value = false;
-    titlevalue.value = checkList.value[0]
+    // titlevalue.value = checkList.value[0]
     if (checked.length > 1) {
         checkList.value = [checked[checked.length - 1]];
     } else {
@@ -328,8 +328,10 @@ const myHandleResponseFunction = (data) => {
         if (datajson.Function === '假设分析淹没情景点击查询') {
             showWaveheight.value = true;
             Waveheight.value = datajson.Zeta.toFixed(2);
+            titlevalue.value = '淹没情景'
         } else {
             showWaveheight.value = false;
+            titlevalue.value = '海浪情景'
         }
         Datatime.value = datajson.DataTime;
         Lon.value = datajson.Lon;
