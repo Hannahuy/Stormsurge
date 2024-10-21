@@ -41,23 +41,22 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 import dayjs from "dayjs";
 import { callUIInteraction, addResponseEventListener, } from "../../module/webrtcVideo/webrtcVideo.js";
-import tabledataJson from "/public/data/实时监测.json";
 import { ElMessage } from 'element-plus'
 import imgshow from '../../assets/img/浮标.png'
 import imageshow from '../../assets/img/浮标 (1).png'
-
+const tabledataJson = ref([]);
 const currentImage = ref(imageshow);
 const toggleImage = () => {
     if (currentImage.value === imageshow) {
         callUIInteraction({
-            ModuleName:'实时感知',
+            ModuleName: '实时感知',
             FunctionName: '浮标模型',
             State: false
         })
         currentImage.value = imgshow;
     } else {
         callUIInteraction({
-            ModuleName:'实时感知',
+            ModuleName: '实时感知',
             FunctionName: '浮标模型',
             State: true
         })
@@ -173,11 +172,12 @@ watch(timePlay, (newVal) => {
     if (currentTime.minute() === 0 && currentTime.second() === 0) {
         // 打印对应的 waterlevel 值
         const hour = currentTime.hour(); // 获取当前小时
-        if (hour >= 0 && hour < tabledataJson.length) { // 确保小时在数组范围内
-            const waterLevel = parseFloat(tabledataJson[hour].waterlevel); // 获取对应的 waterlevel 并转换为浮点型
-            const wavehight = parseFloat(tabledataJson[hour].Waveheight);
+        if (hour >= 0 && hour < tabledataJson.value.length) { // 确保小时在数组范围内
+            const waterLevel = parseFloat(tabledataJson.value[hour].waterlevel); // 获取对应的 waterlevel 并转换为浮点型
+            const wavehight = parseFloat(tabledataJson.value[hour].Waveheight);
+            console.log(waterLevel, wavehight);
             callUIInteraction({
-                ModuleName:'实时感知',
+                ModuleName: '实时感知',
                 FunctionName: '实时感知时间轴',
                 Waterhigh: waterLevel,
                 Wavehigh: wavehight
@@ -206,8 +206,8 @@ const Tideinit = () => {
     TideEchartsdata = echarts.init(salinityChartElement);
 
     // 从 JSON 数据中提取 x 和 y 轴的数据
-    const updatedTimes = tabledataJson.map(item => item.Updated);
-    const waterLevels = tabledataJson.map(item => parseFloat(item.waterlevel));
+    const updatedTimes = tabledataJson.value.map(item => item.Updated);
+    const waterLevels = tabledataJson.value.map(item => parseFloat(item.waterlevel));
 
     const options = {
         tooltip: {
@@ -281,8 +281,8 @@ const Waveheightinit = () => {
     }
     WaveheightEchartsdata = echarts.init(salinityChartElement);
     // 从 JSON 数据中提取 x 和 y 轴的数据
-    const updatedTimes = tabledataJson.map(item => item.Updated);
-    const WaveHeight = tabledataJson.map(item => parseFloat(item.Waveheight));
+    const updatedTimes = tabledataJson.value.map(item => item.Updated);
+    const WaveHeight = tabledataJson.value.map(item => parseFloat(item.Waveheight));
 
     const options = {
         tooltip: {
@@ -361,16 +361,30 @@ const Waveheightinit = () => {
     };
     WaveheightEchartsdata.setOption(options);
 };
+const myHandleResponseFunction = (data) => {
+    const datajson = JSON.parse(data);
+    if (datajson.Function === '报错') {
+        ElMessage({
+            message: datajson.Type,
+            type: 'warning',
+        });
+        return;
+    }
+    if (datajson.Function === '实时感知数据') {
+        tabledataJson.value = datajson.Data;
+        Tideinit();
+        Waveheightinit();
+        callUIInteraction({
+            ModuleName: '实时感知',
+            FunctionName: `实时感知时间轴`,
+            Waterhigh: tabledataJson.value[0].waterlevel,
+            Wavehigh: tabledataJson.value[0].Waveheight
+        });
+    }
+};
 
 onMounted(() => {
-    Tideinit();
-    Waveheightinit();
-    callUIInteraction({
-        ModuleName:'实时感知',
-        FunctionName: `实时感知时间轴`,
-        Waterhigh: tabledataJson[0].waterlevel,
-        Wavehigh: tabledataJson[0].Waveheight
-    });
+    addResponseEventListener("handle_responses", myHandleResponseFunction);
 })
 onBeforeUnmount(() => {
     if (TideEchartsdata) {
