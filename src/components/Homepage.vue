@@ -167,7 +167,7 @@ const setActiveButton = (button) => {
 const maxWaveHeight = ref(null);
 const minWaveHeight = ref(null);
 const wavemaxDataTime = ref(null);
-const waveminDataTime = ref(null); 
+const waveminDataTime = ref(null);
 
 const formatDate = (date) => {
   const year = date.getFullYear();
@@ -324,13 +324,14 @@ const get7DayWaveData = () => {
 const generateDates = (days) => {
   const dates = [];
   const today = new Date();
-  today.setDate(today.getDate() + 1); // 从明天开始
+  // 从今天开始往前推
   for (let i = 0; i < days; i++) {
     const date = new Date(today);
-    date.setDate(today.getDate() + i);
+    date.setDate(today.getDate() - i); // 逐日减少
     dates.push(date.toLocaleDateString()); // 格式化日期
   }
-  return dates;
+  // 反转数组，使得最后一个值是今天
+  return dates.reverse();
 };
 // 24小时
 const generateHours = (hours) => {
