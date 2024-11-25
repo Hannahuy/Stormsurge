@@ -55,14 +55,16 @@
         <div :style="adjustedStylelang">
             <span class="sidebar-span">{{ colorvalue }}</span>
         </div>
-        <el-slider v-model="colorvalue" :step="0.1" vertical height="200px" :min="0" :max="3" :marks="colormarks" :show-tooltip="false" @change="getcolorvalue" />
+        <el-slider v-model="colorvalue" :step="0.1" vertical height="200px" :min="0" :max="3" :marks="colormarks"
+            :show-tooltip="false" @change="getcolorvalue" />
         <div class="color-bar"></div>
     </div>
     <div class="sidebar" v-show="shownextbar">
         <div :style="adjustedStylechao">
             <span class="sidebar-span2">{{ colorvalue2 }}</span>
         </div>
-        <el-slider v-model="colorvalue2" :step="0.1" vertical height="200px" :min="-2" :max="3" :marks="colormarks2" :show-tooltip="false" @change="getcolorvalue2" />
+        <el-slider v-model="colorvalue2" :step="0.1" vertical height="200px" :min="-2" :max="3" :marks="colormarks2"
+            :show-tooltip="false" @change="getcolorvalue2" />
         <div class="color-nextbar"></div>
     </div>
 </template>
@@ -73,6 +75,7 @@ import * as echarts from "echarts";
 import dayjs from "dayjs";
 import { callUIInteraction, addResponseEventListener } from "../../module/webrtcVideo/webrtcVideo.js";
 import { ElMessage } from 'element-plus';
+import axios from 'axios';
 
 const Datatime = ref();
 const Lon = ref();
@@ -95,27 +98,80 @@ const colormarks2 = {
     '2': '',
 };
 
-const timePick = ref(dayjs("2024-03-21").toDate());
-const timePlay = ref(dayjs("2024-03-21 12:00").valueOf()); // 默认设置为 2024-03-21 12:00
+const timePick = ref(dayjs("2024-03-25").toDate());
+const timePlay = ref(dayjs("2024-03-25 12:00").valueOf());
 
-const disabledDate = () => false;
+const validRanges = ref([]); // 当前禁用范围
+const qdlRanges = ref([]); // 潮位预测时间范围
+const swhRanges = ref([]); // 海浪预测时间范围
+const getTime = async () => {
+    try {
+        const res = await axios.get('http://192.168.0.137:8088/amnc/getPreTimeRanges');
+        const data = res.data.data;
 
+        // 保存潮位预测和海浪预测的时间范围
+        qdlRanges.value = data.qdlPreTimeRanges.map((range) => ({
+            start: dayjs(range.start),
+            end: dayjs(range.end),
+        }));
+        swhRanges.value = data.swhPreTimeRanges.map((range) => ({
+            start: dayjs(range.start),
+            end: dayjs(range.end),
+        }));
+
+        // 初始化默认时间值
+        initializeDefaultTime();
+        updateDisabledDates(); // 更新禁用日期
+    } catch (err) {
+        console.error("Failed to fetch time ranges:", err);
+    }
+};
+
+// 初始化默认的时间值
+const initializeDefaultTime = () => {
+    let defaultRange;
+
+    if (activeButton.value === 'wave') {
+        defaultRange = swhRanges.value[0]; // 海浪预测使用 swhRanges 的第一个时间范围
+    } else if (activeButton.value === 'tide') {
+        defaultRange = qdlRanges.value[0]; // 潮位预测使用 qdlRanges 的第一个时间范围
+    }
+
+    if (defaultRange) {
+        const startDateTime = defaultRange.start.toDate();
+        timePick.value = startDateTime; // 日期选择器设置为开始时间的日期
+        timePlay.value = defaultRange.start.valueOf(); // 时间轴设置为具体的时间戳（含小时、分钟、秒）
+    } else {
+        // 如果没有范围数据，设置默认值为当前日期
+        timePick.value = dayjs().toDate();
+        timePlay.value = dayjs().valueOf();
+    }
+};
+
+// 更新禁用范围
+const updateDisabledDates = () => {
+    if (activeButton.value === 'wave') {
+        validRanges.value = swhRanges.value; // 海浪预测使用 swhPreTimeRanges
+    } else if (activeButton.value === 'tide') {
+        validRanges.value = qdlRanges.value; // 潮位预测使用 qdlPreTimeRanges
+    } else {
+        validRanges.value = []; // 默认清空
+    }
+};
+// 切换模式时调用
 const toggleBackground = (button) => {
     if (activeButton.value === button) {
         activeButton.value = null;
     } else {
         activeButton.value = button;
+
+        // 更新禁用日期和初始化默认时间
+        updateDisabledDates();
+        initializeDefaultTime();
+
         const name = button === 'wave' ? '海浪预测' : '潮位预测';
 
-        showBottom.value = false; // 切换时隐藏
-        if (button === 'wave') {
-            timePick.value = dayjs("2024-03-21").toDate();
-            timePlay.value = dayjs("2024-03-21 12:00").valueOf();
-        } else if (button === 'tide') {
-            timePick.value = dayjs("2024-06-06").toDate();
-            timePlay.value = dayjs("2024-06-06 20:00").valueOf();
-        }
-
+        showBottom.value = false; // 切换时隐藏数据
         min.value = dayjs(timePick.value).startOf("day").valueOf();
         max.value = dayjs(timePick.value).endOf("day").valueOf();
 
@@ -125,6 +181,20 @@ const toggleBackground = (button) => {
             Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
         });
     }
+};
+
+const disabledDate = (date) => {
+    const currentDate = dayjs(date).startOf('day');
+    // 当 validRanges 未加载时，禁用所有日期
+    if (!validRanges.value.length) {
+        return true;
+    }
+    // 检查当前日期是否在任何一个有效范围内
+    return !validRanges.value.some(
+        (range) =>
+            currentDate.isSameOrAfter(range.start.startOf('day')) &&
+            currentDate.isSameOrBefore(range.end.startOf('day'))
+    );
 };
 
 const activePlay = ref("");
@@ -266,14 +336,6 @@ watch(timePick, (newVal) => {
         isProgrammaticDateChange.value = false;
         return;
     }
-    // 根据日期设置时间进度
-    if (selectedDate.isSame(dayjs("2024-03-21"), 'day')) {
-        timePlay.value = dayjs("2024-03-21 12:00").valueOf();
-    } else if (selectedDate.isSame(dayjs("2024-06-06"), 'day')) {
-        timePlay.value = dayjs("2024-06-06 20:00").valueOf();
-    } else {
-        timePlay.value = selectedDate.startOf("day").valueOf();
-    }
 });
 
 watch(timePlay, (newVal) => {
@@ -343,6 +405,7 @@ const myHandleResponseFunction = (data) => {
 }
 
 onMounted(() => {
+    getTime();
     callUIInteraction({
         ModuleName: '模拟预测',
         FunctionName: `海浪预测`,
@@ -353,7 +416,7 @@ onMounted(() => {
         Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
     });
     addResponseEventListener("handle_responses", myHandleResponseFunction);
-})
+});
 onBeforeUnmount(() => {
 
 });
@@ -693,7 +756,7 @@ onBeforeUnmount(() => {
     background-repeat: no-repeat;
     background-size: 100% 100%;
     border-radius: 9px;
-    
+
 }
 
 :deep(.el-table--fit) {
