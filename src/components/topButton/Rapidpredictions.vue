@@ -106,7 +106,7 @@ const qdlRanges = ref([]); // 潮位预测时间范围
 const swhRanges = ref([]); // 海浪预测时间范围
 const getTime = async () => {
     try {
-        const res = await axios.get('http://192.168.0.137:8088/amnc/getPreTimeRanges');
+        const res = await axios.get('http://localhost:10020/amnc/getPreTimeRanges');
         const data = res.data.data;
 
         // 保存潮位预测和海浪预测的时间范围
