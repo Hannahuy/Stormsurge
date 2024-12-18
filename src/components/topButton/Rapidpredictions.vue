@@ -106,7 +106,7 @@ const qdlRanges = ref([]); // 潮位预测时间范围
 const swhRanges = ref([]); // 海浪预测时间范围
 const getTime = async () => {
     try {
-        const res = await axios.get('http://localhost:10020/amnc/getPreTimeRanges');
+        const res = await axios.get('http://192.168.1.124:8088/amnc/getPreTimeRanges');
         const data = res.data.data;
 
         // 保存潮位预测和海浪预测的时间范围
@@ -131,11 +131,11 @@ const getTime = async () => {
 const initializeDefaultTime = () => {
     let defaultRange;
 
-    if (activeButton.value === 'wave') {
-        defaultRange = swhRanges.value[0]; // 海浪预测使用 swhRanges 的第一个时间范围
-    } else if (activeButton.value === 'tide') {
-        defaultRange = qdlRanges.value[0]; // 潮位预测使用 qdlRanges 的第一个时间范围
-    }
+    // if (activeButton.value === 'wave') {
+    //     defaultRange = swhRanges.value[0]; // 海浪预测使用 swhRanges 的第一个时间范围
+    // } else if (activeButton.value === 'tide') {
+    //     defaultRange = qdlRanges.value[0]; // 潮位预测使用 qdlRanges 的第一个时间范围
+    // }
 
     if (defaultRange) {
         const startDateTime = defaultRange.start.toDate();
@@ -143,8 +143,11 @@ const initializeDefaultTime = () => {
         timePlay.value = defaultRange.start.valueOf(); // 时间轴设置为具体的时间戳（含小时、分钟、秒）
     } else {
         // 如果没有范围数据，设置默认值为当前日期
-        timePick.value = dayjs().toDate();
-        timePlay.value = dayjs().valueOf();
+        // timePick.value = dayjs().toDate();
+        // timePlay.value = dayjs().valueOf();
+        const currentTime = dayjs();
+        timePick.value = currentTime.toDate(); // 设置为当前日期
+        timePlay.value = currentTime.startOf('hour').valueOf();
     }
 };
 
@@ -178,6 +181,11 @@ const toggleBackground = (button) => {
         callUIInteraction({
             ModuleName: '模拟预测',
             FunctionName: name,
+            Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
+        });
+        callUIInteraction({
+            ModuleName: '模拟预测',
+            FunctionName: predictionType.value,
             Time: dayjs(timePlay.value).format('YYYY-MM-DD HH:mm:ss')
         });
     }
